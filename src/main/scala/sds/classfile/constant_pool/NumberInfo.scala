@@ -23,7 +23,22 @@ abstract class NumberInfo(private val tag: Int) extends ConstantInfo(tag) {
 			case FLOAT   => str + number.floatValue()
 			case LONG    => str + number.longValue()
 			case DOUBLE  => str + number.doubleValue()
-			case _ => str
 		}
 	}
+}
+
+class IntInfo extends NumberInfo(INTEGER) {
+	def getInt(): Int = number.intValue()
+}
+
+class FloatInfo extends NumberInfo(FLOAT) {
+	def getFloat(): Float = number.floatValue()
+}
+
+class LongInfo extends NumberInfo(LONG) {
+	def getLong(): Long = number.longValue()
+}
+
+class DoubleInfo extends NumberInfo(DOUBLE) {
+	def getDouble(): Double = number.doubleValue()
 }

@@ -1,5 +1,7 @@
 package sds
 
+import sds.classfile.MemberInfo
+import sds.classfile.attribute.AttributeInfo
 import sds.classfile.constant_pool.ConstantInfo
 
 class Classfile {
@@ -10,5 +12,8 @@ class Classfile {
 	var thisClass:  Int = -1
 	var superClass: Int = -1
 	var interfaces: Array[Int] = null
-	var pool: Array[ConstantInfo] = null
+	var pool:       Array[ConstantInfo]  = null
+	var fields:     Array[MemberInfo]    = null
+	var methods:    Array[MemberInfo]    = null
+	var attributes: Array[AttributeInfo] = null
 }

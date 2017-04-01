@@ -7,7 +7,7 @@ import scala.collection.mutable.ArrayBuffer;
 class SDS(args: Array[String]) {
 	var jar: JarFile = null;
 	val classfiles: ArrayBuffer[String] = ArrayBuffer();
-	args.foreach((arg: String) => parseArgs(arg))
+	args.foreach(parseArgs(_))
 
 	private def parseArgs(arg: String): Unit = {
 		if(arg.endsWith(".class")) {
