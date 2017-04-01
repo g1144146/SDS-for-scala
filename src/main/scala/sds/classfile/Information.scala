@@ -1,8 +1,7 @@
 package sds.classfile
 
-import java.io.IOException
+import sds.classfile.constant_pool.ConstantInfo
 
 trait Information {
-	@throws(classOf[IOException])
-	def read(stream: ClassfileStream, pool: ConstantPool): Unit;
+	def read(stream: ClassfileStream, pool: Array[ConstantInfo]): Unit;
 }

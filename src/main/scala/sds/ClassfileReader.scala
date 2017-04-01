@@ -1,11 +1,12 @@
 package sds
 
 import java.io.{IOException, InputStream, RandomAccessFile};
-import sds.classfile.{ConstantPool => Pool, ClassfileStream};
-import sds.classfile.constant_pool.{ConstantInfo, ConstantInfoFactory => CFactory}
+import sds.classfile.ClassfileStream;
+import sds.classfile.constant_pool.{ConstantInfo => CInfo, ConstantInfoAdapter, ConstantInfoFactory => CFactory}
+import sds.classfile.constant_pool.ConstantType.{LONG, DOUBLE}
 
 class ClassfileReader {
-	var stream: ClassfileStream = null
+	private var stream: ClassfileStream = null
 	val classfile: Classfile = new Classfile()
 
 	def this(stream: InputStream) {
@@ -31,22 +32,24 @@ class ClassfileReader {
 		classfile.magic = stream.readInt()
 		classfile.minor = stream.readShort()
 		classfile.major = stream.readShort()
-		classfile.pool = readConstantPool(0, new CFactory, new Pool(stream.readShort() - 1))
+		classfile.pool = readConstantPool(0, new CFactory(), new Array[CInfo](stream.readShort() - 1))
 		classfile.access = stream.readShort()
 		classfile.thisClass = stream.readShort()
 		classfile.superClass = stream.readShort()
 	}
 
-	private def readConstantPool(i: Int, factory: CFactory, pool: Pool): Pool = {
+	private def readConstantPool(i: Int, factory: CFactory, pool: Array[CInfo]): Array[CInfo] = {
 		if(i >= pool.length) {
 			return pool
 		}
-		val info: ConstantInfo = factory.create(stream.readByte())
-		info.read(stream, pool)
-		pool :+ info
-//		if(info.getTag() == 0) {
-//			
-//		}
-		readConstantPool(i + 1, factory, pool)
+		val info: CInfo = factory.create(stream.readByte())
+		info.read(stream)
+		pool(i) = info
+		if(info.getTag() == LONG || info.getTag() == DOUBLE) {
+			pool(i + 1) = new ConstantInfoAdapter()
+			readConstantPool(i + 2, factory, pool)
+		} else {
+			readConstantPool(i + 1, factory, pool)
+		}
 	}
 }

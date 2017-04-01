@@ -1,7 +1,5 @@
 package sds.util
 
-import java.lang.StringBuilder
-
 class MultiArgsStringBuilder {
 	val build: StringBuilder = new StringBuilder();
 	

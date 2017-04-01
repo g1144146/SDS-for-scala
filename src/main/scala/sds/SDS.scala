@@ -1,18 +1,17 @@
 package sds;
 
-import java.util.jar.JarFile;
 import java.io.{IOException, File};
-import scala.collection.mutable.ArraySeq;
+import java.util.jar.JarFile;
+import scala.collection.mutable.ArrayBuffer;
 
 class SDS(args: Array[String]) {
-	args.foreach((_: String) => parseArgs(_))
-
 	var jar: JarFile = null;
-	var classfiles: ArraySeq[String] = null;
+	val classfiles: ArrayBuffer[String] = ArrayBuffer();
+	args.foreach((arg: String) => parseArgs(arg))
 
 	private def parseArgs(arg: String): Unit = {
 		if(arg.endsWith(".class")) {
-			classfiles +: arg
+			classfiles += arg
 		} else if(arg.endsWith(".jar")) {
 			try {
 				this.jar = new JarFile(new File(arg))
@@ -29,6 +28,8 @@ class SDS(args: Array[String]) {
 		classfiles.foreach((file: String) => {
 			val reader: ClassfileReader = new ClassfileReader(file)
 			reader.read()
+			val classfile: Classfile = reader.classfile
+			(0 until classfile.pool.length).foreach((i: Int) => println("[" + (i+1) + "]: " + classfile.pool(i)))
 		})
 	}
 

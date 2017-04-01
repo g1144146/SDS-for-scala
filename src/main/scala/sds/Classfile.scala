@@ -1,6 +1,6 @@
 package sds
 
-import sds.classfile.ConstantPool
+import sds.classfile.constant_pool.ConstantInfo
 
 class Classfile {
 	var magic:  Int = -1
@@ -10,5 +10,5 @@ class Classfile {
 	var thisClass:  Int = -1
 	var superClass: Int = -1
 	var interfaces: Array[Int] = null
-	var pool: ConstantPool = null
+	var pool: Array[ConstantInfo] = null
 }
