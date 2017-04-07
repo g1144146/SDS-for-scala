@@ -3,14 +3,9 @@ package sds.classfile.attribute
 import sds.classfile.ClassfileStream
 import sds.classfile.constant_pool.ConstantInfo
 
-class SourceFile extends AttributeInfo(AttributeType.SourceFile) {
-	private var file: String = ""
+class SourceFile(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo(AttributeType.SourceFile) {
+	private val file: String = extract(data.readShort(), pool)
 
 	def getFile(): String = file
-
-	override def read(data: ClassfileStream, pool: Array[ConstantInfo]): Unit = {
-		this.file = extract(data.readShort(), pool)
-	}
-
 	override def toString(): String = super.toString() + ": " + file
 }

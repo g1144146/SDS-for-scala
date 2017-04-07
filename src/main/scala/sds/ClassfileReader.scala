@@ -7,13 +7,13 @@ import sds.classfile.constant_pool.{ConstantInfo => CInfo, Utf8Info => Utf8, Con
 import sds.classfile.constant_pool.ConstantType.{LONG, DOUBLE}
 
 class ClassfileReader {
-	private var stream: ClassfileStream = null
+	private var data: ClassfileStream = null
 	val classfile: Classfile = new Classfile()
 
-	def this(stream: InputStream) {
+	def this(data: InputStream) {
 		this()
 		try {
-			this.stream = new ClassfileStream(stream)
+			this.data = new ClassfileStream(data)
 		} catch {
 			case e: IOException => e.printStackTrace()
 		}
@@ -22,38 +22,31 @@ class ClassfileReader {
 	def this(fileName: String) {
 		this()
 		try {
-			this.stream = new ClassfileStream(new RandomAccessFile(fileName, "r"))
+			this.data = new ClassfileStream(new RandomAccessFile(fileName, "r"))
 		} catch {
 			case e: IOException => e.printStackTrace()
 		}
 	}
 
 	def read(): Unit = {
-		classfile.magic = stream.readInt()
-		classfile.minor = stream.readShort()
-		classfile.major = stream.readShort()
-		classfile.pool = readConstantPool(0, new Array[CInfo](stream.readShort() - 1))
-		classfile.access = stream.readShort()
-		classfile.thisClass = stream.readShort()
-		classfile.superClass = stream.readShort()
-		classfile.interfaces = range(stream.readShort()).map((_: Int) => stream.readShort()).toArray
+		classfile.magic = data.readInt()
+		classfile.minor = data.readShort()
+		classfile.major = data.readShort()
+		classfile.pool = readConstantPool(0, new Array[CInfo](data.readShort() - 1))
+		classfile.access = data.readShort()
+		classfile.thisClass = data.readShort()
+		classfile.superClass = data.readShort()
+		classfile.interfaces = range(data.readShort()).map((_: Int) => data.readShort()).toArray
 
-		val genAttr: ((Int) => (AttributeInfo)) = (_: Int) => {
-			val name: Int = stream.readShort()
+		lazy val genAttr: ((Int) => (AttributeInfo)) = (_: Int) => {
+			val name: Int = data.readShort()
 			val utf8: Utf8 = classfile.pool(name - 1).asInstanceOf[Utf8]
-			val info: AttributeInfo = AttributeInfo(utf8.getValue(), stream.readInt())
-			info.read(stream, classfile.pool)
-			info
+			AttributeInfo(utf8.getValue(), data, classfile.pool)
 		}
-		val genMember: ((Int) => (MemberInfo)) = (_: Int) => {
-			val member: MemberInfo = new MemberInfo()
-			member.read(stream, classfile.pool)
-			member.attributes = range(stream.readShort()).map(genAttr).toArray
-			member
-		}
-		classfile.fields     = range(stream.readShort()).map(genMember).toArray
-		classfile.methods    = range(stream.readShort()).map(genMember).toArray
-		classfile.attributes = range(stream.readShort()).map(genAttr).toArray
+		lazy val genMember: ((Int) => (MemberInfo)) = (_: Int) => new MemberInfo(data, classfile.pool)
+		classfile.fields     = range(data.readShort()).map(genMember).toArray
+		classfile.methods    = range(data.readShort()).map(genMember).toArray
+		classfile.attributes = range(data.readShort()).map(genAttr).toArray
 	}
 
 	private def range(end: Int): Range = (0 until end)
@@ -62,10 +55,8 @@ class ClassfileReader {
 		if(i >= pool.length) {
 			return pool
 		}
-		val info: CInfo = CInfo(stream.readByte())
-		info.read(stream)
-		pool(i) = info
-		if(info.getTag() == LONG || info.getTag() == DOUBLE) {
+		pool(i) = CInfo(data)
+		if(pool(i).getTag() == LONG || pool(i).getTag() == DOUBLE) {
 			pool(i + 1) = new Adapter()
 			readConstantPool(i + 2, pool)
 		} else {

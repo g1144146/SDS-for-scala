@@ -8,13 +8,13 @@ import sds.classfile.constant_pool.ConstantInfo
 class OpcodeInfo(protected val _type: Table.Value, protected val pc: Int) extends Information {
 	def getType(): Table.Value = _type
 	def getPc(): Int = pc
-	def read(data: ClassfileStream): Unit = {}
-	override def read(data: ClassfileStream, pool: Array[ConstantInfo]): Unit = read(data)
+
 	override def toString(): String = pc + " - " + _type.toString()
 }
 
 object OpcodeInfo {
-	def apply(opcode: Int, pc: Int): OpcodeInfo = {
+	def apply(pc: Int, data: ClassfileStream, pool: Array[ConstantInfo]): OpcodeInfo = {
+		val opcode: Int = data.readByte() & 0xff
 		if((0x00 to 0x0f).contains(opcode)  || (0x1a to 0x35).contains(opcode)  ||
 		   (0x3b to 0x83).contains(opcode)  || (0x85 to 0x98).contains(opcode)  ||
 		   (0xac to 0xb1).contains(opcode)  || opcode == 0xbe || opcode == 0xbf ||
@@ -24,7 +24,7 @@ object OpcodeInfo {
 		opcode match {
 			case 0x10 /** bipush **/
 			  |  0x11 /** sipush **/
-			          => new PushOpcode(Table(opcode), pc);
+			          => new PushOpcode(data, Table(opcode), pc);
 			case 0x12  /** ldc **/
 			  |  0x13  /** ldc_w **/
 			  |  0x14  /** ldc2_w **/
@@ -39,7 +39,7 @@ object OpcodeInfo {
 			  |  0xc0  /** checkcast **/
 			  |  0xbd  /** anewarray **/
 			  |  0xc1 /** instanceof **/
-			          => new HasReferenceOpcode(Table(opcode), pc);
+			          => new HasReferenceOpcode(data, pool, Table(opcode), pc);
 			case 0x15  /** iload **/
 			  |  0x16  /** lload **/
 			  |  0x17  /** fload **/
@@ -51,8 +51,8 @@ object OpcodeInfo {
 			  |  0x39  /** dstore **/
 			  |  0x3a  /** astore **/
 			  |  0xa9  /** ret **/
-			          => new IndexOpcode(Table(opcode), pc);
-			case 0x84 => new Iinc(pc);
+			          => new IndexOpcode(data, Table(opcode), pc);
+			case 0x84 => new Iinc(data, pc);
 			case 0x99  /** ifeq **/
 			  |  0x9a  /** ifne **/
 			  |  0x9b  /** iflt **/
@@ -71,17 +71,17 @@ object OpcodeInfo {
 			  |  0xa8  /** jsr **/	
 			  |  0xc6  /** ifnull **/
 			  |  0xc7  /** ifnonnull **/
-			          => new BranchOpcode(Table(opcode), pc);
-			case 0xaa => new TableSwitch(pc);
-			case 0xab => new LookupSwitch(pc);
-			case 0xb9 => new InvokeInterface(pc);
-			case 0xba => new InvokeDynamic(pc);
-			case 0xbc => new NewArray(pc);
-			case 0xc4 => new Wide(pc);
-			case 0xc5 => new MultiANewArray(pc);
+			          => new BranchOpcode(data, Table(opcode), pc);
+			case 0xaa => new TableSwitch(data, pc);
+			case 0xab => new LookupSwitch(data, pc);
+			case 0xb9 => new InvokeInterface(data, pool, pc);
+			case 0xba => new InvokeDynamic(data, pool, pc);
+			case 0xbc => new NewArray(data, pc);
+			case 0xc4 => new Wide(data, pool, pc);
+			case 0xc5 => new MultiANewArray(data, pool, pc);
 			case 0xc8  /** goto_w **/
 			  |  0xc9  /** jsr_w **/
-			          => new BranchWide(Table(opcode), pc);
+			          => new BranchWide(data, Table(opcode), pc);
 			case 0xfe => new OpcodeInfo(Table(0xcb), pc); 
 			case 0xff => new OpcodeInfo(Table(0xcc), pc);
 			case _    => throw new IllegalArgumentException("undefined opcode(" + opcode + ")");

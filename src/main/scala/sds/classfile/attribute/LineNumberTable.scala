@@ -1,21 +1,20 @@
 package sds.classfile.attribute
 
 import sds.classfile.ClassfileStream
+import sds.classfile.attribute.AttributeType.LineNumberTable
 import sds.classfile.constant_pool.ConstantInfo
 import sds.util.{MultiArgsStringBuilder => Builder}
 
-class LineNumberTable extends AttributeInfo(AttributeType.LineNumberTable) {
-	private var table: Array[Array[Int]] = null
-
-	def getTable(): Array[Array[Int]] = table
-
-	override def read(data: ClassfileStream, pool: Array[ConstantInfo]): Unit = {
-		val len: Int = data.readShort()
-		table = (0 until len).map((index: Int) => {
-			val start: Int = data.readShort()
-			val line: Int = data.readShort()
-			Array(start, -1, line)
-		}).toArray
+class LineNumberTable(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo(LineNumberTable) {
+	private val table: Array[Array[Int]] = (0 until data.readShort()).map((index: Int) => {
+		val start: Int = data.readShort()
+		val line: Int = data.readShort()
+		Array(start, -1, line)
+	}).toArray
+	init()
+	
+	def init(): Unit = {
+		val len = table.length
 		(0 until len).foreach((index: Int) => {
 			if(index == len - 1) {
 				table(index)(1) = table(index)(0)
@@ -28,6 +27,7 @@ class LineNumberTable extends AttributeInfo(AttributeType.LineNumberTable) {
 		})
 	}
 
+	def getTable(): Array[Array[Int]] = table
 	override def toString(): String = {
 		val b: Builder = new Builder(super.toString())
 		b.append(": ")

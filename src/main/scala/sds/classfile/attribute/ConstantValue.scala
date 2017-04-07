@@ -1,16 +1,11 @@
 package sds.classfile.attribute
 
-import sds.classfile.ClassfileStream
-import sds.classfile.constant_pool.ConstantInfo
+import sds.classfile.{ClassfileStream => Stream}
+import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 
-class ConstantValue extends AttributeInfo(AttributeType.ConstantValue) {
-	private var value: String = null
+class ConstantValue(data: Stream, pool: Array[CInfo]) extends AttributeInfo(AttributeType.ConstantValue) {
+	private val value: String = extract(data.readShort(), pool)
 
 	def getValue(): String = value
-
-	override def read(data: ClassfileStream, pool: Array[ConstantInfo]): Unit = {
-		this.value = extract(data.readShort(), pool)
-	}
-
 	override def toString(): String = super.toString() + ": " + value
 }

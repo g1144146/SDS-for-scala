@@ -2,25 +2,19 @@ package sds.classfile.attribute
 
 import collection.mutable.{LinkedHashMap => Linked, HashMap => Map, ArrayBuffer => Buffer}
 import sds.classfile.{ClassfileStream => Stream}
-import sds.classfile.bytecode.OpcodeInfo
-import sds.classfile.constant_pool.ConstantInfo
 import sds.classfile.attribute.{FrameType => FT}
 import sds.classfile.attribute.{VerificationTypeInfo => VTI}
+import sds.classfile.attribute.AttributeType.StackMapTable
+import sds.classfile.bytecode.{OpcodeInfo => Opcode}
+import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 import sds.util.StackMapFrameParser.parseFrame
 
-class StackMapTable extends AttributeInfo(AttributeType.StackMapTable) {
-	private var entries: Linked[Int, Map[String, Buffer[String]]] = null
+class StackMapTable(data: Stream, pool: Array[CInfo], opcodes: Array[Opcode]) extends AttributeInfo(StackMapTable) {
+	private val entries: Linked[Int, Map[String, Buffer[String]]] = parseFrame((0 until data.readShort())
+			.map((_: Int) => StackMapFrame(data)).toArray, pool, opcodes)
 
 	def getEntries(): Linked[Int, Map[String, Buffer[String]]] = entries
-
-	override def read(data: Stream, pool: Array[ConstantInfo]): Unit = {}
-
-	def read(data: Stream, pool: Array[ConstantInfo], opcodes: Array[OpcodeInfo]): Unit = {
-		val frames: Array[StackMapFrame] = (0 until data.readShort()).map((_: Int) => {
-			StackMapFrame(data)
-		}).toArray
-		this.entries = parseFrame(frames, pool, opcodes)
-	}
+	override def toString(): String = super.toString() + ": " + entries
 }
 
 object FrameType extends Enumeration {
@@ -76,7 +70,6 @@ class ChopFrame(_type: FT.Value, tag: Int, data: Stream) extends SameFrame(_type
 	def this(tag: Int, data: Stream) {
 		this(FT.ChopFrame, tag, data)
 	}
-
 	def getOffset(): Int = offset
 }
 

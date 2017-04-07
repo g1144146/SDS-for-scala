@@ -1,28 +1,30 @@
 package sds.classfile
 
 import sds.classfile.attribute.AttributeInfo
-import sds.classfile.constant_pool.ConstantInfo
+import sds.classfile.constant_pool.{ConstantInfo, Utf8Info => Utf8}
 import sds.util.AccessFlag.get
 import sds.util.DescriptorParser.parse
 
-class MemberInfo extends Information {
-	private val declaration: Array[String] = new Array(3)
-	var attributes: Array[AttributeInfo] = null
+class MemberInfo(data: ClassfileStream, pool: Array[ConstantInfo]) extends Information {
+	private val declaration: Array[String] = (() => {
+		val accIndex:  Int = data.readShort()
+		val nameIndex: Int = data.readShort()
+		val descIndex: Int = data.readShort()
+		val name: String = extract(nameIndex, pool)
+		val desc: String = parse(extract(descIndex, pool))
+		Array(name, desc, get(accIndex, if(desc.contains("(")) "method" else "field"))
+	})()
+	private val attributes: Array[AttributeInfo] = (0 until data.readShort()).map((_: Int) => ({
+		val name: Int = data.readShort()
+		val utf8: Utf8 = pool(name - 1).asInstanceOf[Utf8]
+		AttributeInfo(utf8.getValue(), data, pool)
+	})).toArray
 
 	def getAccess(): String = declaration(0)
 	def getName():   String = declaration(1)
 	def getDesc():   String = declaration(2)
 	def getType():   String = if(declaration(2).contains("(")) "method" else "field"
 	def getAttributes(): Array[AttributeInfo] = attributes
-
-	override def read(data: ClassfileStream, pool: Array[ConstantInfo]): Unit = {
-		val acc: Int  = data.readShort()
-		val name: Int = data.readShort()
-		val desc: Int = data.readShort()
-		declaration(1) = extract(name, pool)
-		declaration(2) = parse(extract(desc, pool))
-		declaration(0) = get(acc, getType())
-	}
 
 	override def toString(): String = {
 		if(getType().equals("field")) {

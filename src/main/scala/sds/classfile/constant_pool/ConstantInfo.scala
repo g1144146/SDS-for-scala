@@ -6,27 +6,28 @@ import sds.classfile.constant_pool.ConstantType._
 
 abstract class ConstantInfo(private val tag: Int) extends Information {
 	def getTag(): Int = tag
-	def read(data: ClassfileStream): Unit
-	override def read(data: ClassfileStream, pool: Array[ConstantInfo]): Unit = read(data)
 	override def toString(): String = ConstantType.get(tag)
 }
 
 object ConstantInfo {
-	def apply(tag: Int): ConstantInfo = tag match {
-		case UTF8 => new Utf8Info()
-		case INTEGER => new IntInfo()
-		case FLOAT   => new FloatInfo()
-		case LONG    => new LongInfo()
-		case DOUBLE  => new DoubleInfo()
-		case CLASS   => new ClassInfo()
-		case STRING  => new StringInfo()
-		case FIELD          => new MemberInfo(FIELD)
-		case METHOD         => new MemberInfo(METHOD)
-		case INTERFACE      => new MemberInfo(INTERFACE)
-		case NAME_AND_TYPE  => new NameAndTypeInfo()
-		case HANDLE         => new HandleInfo()
-		case TYPE           => new TypeInfo()
-		case INVOKE_DYNAMIC => new InvokeDynamicInfo()
-		case _ => new ConstantInfoAdapter()
+	def apply(data: ClassfileStream): ConstantInfo = { 
+		val tag: Int = data.readByte()
+		tag match {
+			case UTF8 => new Utf8Info(data)
+			case INTEGER => new IntInfo(data)
+			case FLOAT   => new FloatInfo(data)
+			case LONG    => new LongInfo(data)
+			case DOUBLE  => new DoubleInfo(data)
+			case CLASS   => new ClassInfo(data)
+			case STRING  => new StringInfo(data)
+			case FIELD          => new MemberInfo(FIELD, data)
+			case METHOD         => new MemberInfo(METHOD, data)
+			case INTERFACE      => new MemberInfo(INTERFACE, data)
+			case NAME_AND_TYPE  => new NameAndTypeInfo(data)
+			case HANDLE         => new HandleInfo(data)
+			case TYPE           => new TypeInfo(data)
+			case INVOKE_DYNAMIC => new InvokeDynamicInfo(data)
+			case _ => new ConstantInfoAdapter()
+		}
 	}
 }

@@ -4,8 +4,6 @@ import sds.classfile.constant_pool.ConstantInfo
 import sds.util.Utf8ValueExtractor.extract
 
 trait Information {
-	def read(data: ClassfileStream, pool: Array[ConstantInfo]): Unit;
-
 	def extract(index: Int, pool: Array[ConstantInfo]): String = {
 		sds.util.Utf8ValueExtractor.extract(pool(index - 1), pool)
 	}

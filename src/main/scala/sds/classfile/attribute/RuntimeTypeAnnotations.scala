@@ -1,18 +1,19 @@
 package sds.classfile.attribute
 
-import sds.classfile.ClassfileStream
+import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.attribute.annotation.{ElementValuePair => Pair}
-import sds.classfile.constant_pool.ConstantInfo
+import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 import sds.util.AnnotationGenerator.generate
 import sds.util.{MultiArgsStringBuilder => Builder}
 
-class RuntimeTypeAnnotations(t: AttributeType.Value) extends AttributeInfo(t) {
+class RuntimeTypeAnnotations(data: Stream, pool: Array[CInfo], t: AttributeType.Value) extends  AttributeInfo(t) {
 	private var types: Array[TypeAnnotation] = null
 	private var annotations: Array[String] = null
+	init()
 
 	def getTypes(): Array[TypeAnnotation] = types
 	def getAnnotations(): Array[String] = annotations
-	override def read(data: ClassfileStream, pool: Array[ConstantInfo]): Unit = {
+	def init(): Unit = {
 		val size: Int = data.readShort()
 		this.types = new Array(size)
 		this.annotations = new Array(size)
@@ -35,7 +36,7 @@ class RuntimeTypeAnnotations(t: AttributeType.Value) extends AttributeInfo(t) {
 	}
 }
 
-class TypeAnnotation(data: ClassfileStream) {
+class TypeAnnotation(data: Stream) {
 	private val info: TargetInfo = TargetInfo(data)
 	private val path: Array[(Int, Int)] = (0 until data.readUnsignedByte()).map((_: Int) => {
 		// path_king, arg_index
@@ -91,7 +92,7 @@ class ThrowsTarget(private val throwsType: Int) extends TargetInfo(TargetType.Th
 	override def toString(): String = super.toString() + "index:" + throwsType
 }
 
-class LocalVarTarget(data: ClassfileStream) extends TargetInfo(TargetType.LocalVarTarget) {
+class LocalVarTarget(data: Stream) extends TargetInfo(TargetType.LocalVarTarget) {
 	val table: Array[Int] = (0 until data.readShort()).map((_: Int) => data.readShort()).toArray
 	
 	def getStart(): Int = table(0)
@@ -120,7 +121,7 @@ TargetInfo(TargetType.TypeArgTarget) {
 }
 
 object TargetInfo {
-	def apply(data: ClassfileStream): TargetInfo = {
+	def apply(data: Stream): TargetInfo = {
 		val targetType: Int = data.readUnsignedByte()
 		targetType match {
 			case 0x00|0x01                => new TypeParamTarget(data.readUnsignedByte())
