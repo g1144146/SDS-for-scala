@@ -3,6 +3,7 @@ package sds;
 import java.io.{IOException, File};
 import java.util.jar.JarFile;
 import scala.collection.mutable.ArrayBuffer;
+import sds.util.{ClassfilePrinter => Printer}
 
 class SDS(args: Array[String]) {
 	var jar: JarFile = null;
@@ -29,7 +30,8 @@ class SDS(args: Array[String]) {
 			val reader: ClassfileReader = new ClassfileReader(file)
 			reader.read()
 			val classfile: Classfile = reader.classfile
-			(0 until classfile.pool.length).foreach((i: Int) => println("[" + (i+1) + "]: " + classfile.pool(i)))
+			val p: Printer = new Printer(classfile)
+			p._print
 		})
 	}
 

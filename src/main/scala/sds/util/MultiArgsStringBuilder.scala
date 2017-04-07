@@ -9,4 +9,6 @@ class MultiArgsStringBuilder {
 	}
 
 	def append(elements: Any*): Unit = elements.foreach(build.append(_))
+
+	override def toString(): String = build.toString()
 }

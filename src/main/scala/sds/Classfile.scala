@@ -11,9 +11,9 @@ class Classfile {
 	var access: Int = -1
 	var thisClass:  Int = -1
 	var superClass: Int = -1
-	var interfaces: Array[Int] = null
-	var pool:       Array[ConstantInfo]  = null
-	var fields:     Array[MemberInfo]    = null
-	var methods:    Array[MemberInfo]    = null
-	var attributes: Array[AttributeInfo] = null
+	var interfaces: Array[Int] = new Array(0)
+	var pool:       Array[ConstantInfo]  = new Array(0)
+	var fields:     Array[MemberInfo]    = new Array(0)
+	var methods:    Array[MemberInfo]    = new Array(0)
+	var attributes: Array[AttributeInfo] = new Array(0)
 }

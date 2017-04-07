@@ -16,23 +16,21 @@ object ConstantType {
 	val TYPE:           Int = 16
 	val INVOKE_DYNAMIC: Int = 18
 
-	def get(tag: Int): String = {
-		tag match {
-			case UTF8           => "CONSTANT_UTF8"
-			case INTEGER        => "CONSTANT_INTEGER"
-			case FLOAT          => "CONSTANT_FLOAT"
-			case LONG           => "CONSTANT_LONG"
-			case DOUBLE         => "CONSTANT_DOUBLE"
-			case CLASS          => "CONSTANT_CLASS"
-			case STRING         => "CONSTANT_STRING"
-			case FIELD          => "CONSTANT_FIELDREF"
-			case METHOD         => "CONSTANT_METHODREF"
-			case INTERFACE      => "CONSTANT_INTERFACE_METHODREF"
-			case NAME_AND_TYPE  => "CONSTANT_NAME_AND_TYPE"
-			case HANDLE         => "CONSTANT_METHOD_HANDLE"
-			case TYPE           => "CONSTANT_METHOD_TYPE"
-			case INVOKE_DYNAMIC => "CONSTANT_INVOKE_DYNAMIC"
-			case _ => "UKNOWN"
-		}
+	def get(tag: Int): String = tag match {
+		case UTF8           => "CONSTANT_UTF8"
+		case INTEGER        => "CONSTANT_INTEGER"
+		case FLOAT          => "CONSTANT_FLOAT"
+		case LONG           => "CONSTANT_LONG"
+		case DOUBLE         => "CONSTANT_DOUBLE"
+		case CLASS          => "CONSTANT_CLASS"
+		case STRING         => "CONSTANT_STRING"
+		case FIELD          => "CONSTANT_FIELDREF"
+		case METHOD         => "CONSTANT_METHODREF"
+		case INTERFACE      => "CONSTANT_INTERFACE_METHODREF"
+		case NAME_AND_TYPE  => "CONSTANT_NAME_AND_TYPE"
+		case HANDLE         => "CONSTANT_METHOD_HANDLE"
+		case TYPE           => "CONSTANT_METHOD_TYPE"
+		case INVOKE_DYNAMIC => "CONSTANT_INVOKE_DYNAMIC"
+		case _              => "UKNOWN"
 	}
 }

@@ -1,39 +1,40 @@
 package sds.util
 
 object AccessFlag {
-	val PUBLIC:       Int = 0x0001
-	val PRIVATE:      Int = 0x0002
-	val PROTECTED:    Int = 0x0004
-	val STATIC:       Int = 0x0008
-	val FINAL:        Int = 0x0010
-	val SUPER:        Int = 0x0020
-	val SYNCHRONIZED: Int = 0x0020
-	val VOLATILE:     Int = 0x0040
-	val BRIDGE:       Int = 0x0040
-	val TRANSIENT:    Int = 0x0080
-	val VARARGS:      Int = 0x0080
-	val NATIVE:       Int = 0x0100
-	val INTERFACE:    Int = 0x0200
-	val ABSTRACT:     Int = 0x0400
-	val STRICT:       Int = 0x0800
-	val SYNTHETIC:    Int = 0x1000
-	val ANNOTATION:   Int = 0x2000
-	val ENUM:         Int = 0x4000
-	val MANDATED:     Int = 0x8000
-	val CLASS:  Int = PUBLIC | FINAL | SUPER | INTERFACE | ABSTRACT | SYNTHETIC | ANNOTATION | ENUM
-	val FIELD:  Int = PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | VOLATILE | TRANSIENT | SYNTHETIC | ENUM
-	val METHOD: Int = PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | SYNCHRONIZED | BRIDGE | VARARGS | 
-	                  NATIVE | ABSTRACT | STRICT | SYNTHETIC
-	val NESTED: Int = PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL |
-	                  INTERFACE | ABSTRACT | SYNTHETIC | ANNOTATION | ENUM
-	val LOCAL:  Int = FINAL | SYNTHETIC | MANDATED
+	private val PUBLIC:       Int = 0x0001
+	private val PRIVATE:      Int = 0x0002
+	private val PROTECTED:    Int = 0x0004
+	private val STATIC:       Int = 0x0008
+	private val FINAL:        Int = 0x0010
+	private val SUPER:        Int = 0x0020
+	private val SYNCHRONIZED: Int = 0x0020
+	private val VOLATILE:     Int = 0x0040
+	private val BRIDGE:       Int = 0x0040
+	private val TRANSIENT:    Int = 0x0080
+	private val VARARGS:      Int = 0x0080
+	private val NATIVE:       Int = 0x0100
+	private val INTERFACE:    Int = 0x0200
+	private val ABSTRACT:     Int = 0x0400
+	private val STRICT:       Int = 0x0800
+	private val SYNTHETIC:    Int = 0x1000
+	private val ANNOTATION:   Int = 0x2000
+	private val ENUM:         Int = 0x4000
+	private val MANDATED:     Int = 0x8000
+	private val CLASS:  Int = PUBLIC | FINAL | SUPER | INTERFACE | ABSTRACT | SYNTHETIC | ANNOTATION | ENUM
+	private val FIELD:  Int = PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | VOLATILE | TRANSIENT |
+	                          SYNTHETIC | ENUM
+	private val METHOD: Int = PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | SYNCHRONIZED | BRIDGE | VARARGS | 
+	                          NATIVE | ABSTRACT | STRICT | SYNTHETIC
+	private val NESTED: Int = PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL |
+	                          INTERFACE | ABSTRACT | SYNTHETIC | ANNOTATION | ENUM
+	private val LOCAL:  Int = FINAL | SYNTHETIC | MANDATED
 
 	def get(flag: Int, _type: String): String = {
-		if(_type.eq("class")  && checkOr(flag, CLASS))  getClassFlag(flag)
-		if(_type.eq("field")  && checkOr(flag, FIELD))  getFieldFlag(flag)
-		if(_type.eq("method") && checkOr(flag, METHOD)) getMethodFlag(flag)
-		if(_type.eq("nested") && checkOr(flag, NESTED)) getClassFlag(flag)
-		if(_type.eq("local")  && checkOr(flag, LOCAL))  getLocalFlag(flag)
+		if(_type.eq("class")  && checkOr(flag, CLASS))  return getClassFlag(flag)
+		if(_type.eq("field")  && checkOr(flag, FIELD))  return getFieldFlag(flag)
+		if(_type.eq("method") && checkOr(flag, METHOD)) return getMethodFlag(flag)
+		if(_type.eq("nested") && checkOr(flag, NESTED)) return getClassFlag(flag)
+		if(_type.eq("local")  && checkOr(flag, LOCAL))  return getLocalFlag(flag)
 		throw new IllegalArgumentException()
 	}
 

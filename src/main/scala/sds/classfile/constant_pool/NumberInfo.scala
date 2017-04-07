@@ -4,7 +4,7 @@ import java.lang.Number
 import sds.classfile.ClassfileStream
 import sds.classfile.constant_pool.ConstantType.{INTEGER, FLOAT, LONG, DOUBLE}
 
-abstract class NumberInfo(private val tag: Int) extends ConstantInfo(tag) {
+abstract class NumberInfo(tag: Int) extends ConstantInfo(tag) {
 	protected var number: Number = null
 
 	override def read(stream: ClassfileStream): Unit = {
