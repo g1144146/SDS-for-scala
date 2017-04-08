@@ -7,6 +7,5 @@ class PushOpcode(data: ClassfileStream, _type: MnemonicTable.Value, pc: Int) ext
 	private val value: Int = if(_type == bipush) data.readByte() else data.readShort()
 
 	def getValue(): Int = value
-
 	override def toString(): String = super.toString() + ": " + value
 }

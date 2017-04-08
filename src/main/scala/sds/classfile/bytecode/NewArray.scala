@@ -16,6 +16,5 @@ class NewArray(data: ClassfileStream, pc: Int) extends OpcodeInfo(MnemonicTable.
 	}
 
 	def getAType(): String = atype
-
 	override def toString(): String = super.toString() + ": " + atype
 }

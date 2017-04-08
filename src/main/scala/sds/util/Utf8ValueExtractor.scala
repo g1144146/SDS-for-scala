@@ -1,8 +1,16 @@
 package sds.util
 
-import sds.classfile.constant_pool.{ConstantInfo, ClassInfo => Class, HandleInfo => Handle, TypeInfo => Type,
-                                    IntInfo, FloatInfo, LongInfo, DoubleInfo, StringInfo, Utf8Info => Utf8,
-                                    MemberInfo => Member, NameAndTypeInfo => Name, InvokeDynamicInfo => Invoke}
+import sds.classfile.constant_pool.{
+  ConstantInfo, IntInfo, FloatInfo,
+  LongInfo, DoubleInfo, StringInfo,
+  ClassInfo         => Class,
+  HandleInfo        => Handle,
+  TypeInfo          => Type,
+  Utf8Info          => Utf8,
+  MemberInfo        => Member,
+  NameAndTypeInfo   => Name,
+  InvokeDynamicInfo => Invoke
+}
 import sds.classfile.constant_pool.ConstantType._
 import sds.util.DescriptorParser.{parse, removeLangPrefix}
 

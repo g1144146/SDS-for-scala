@@ -8,6 +8,5 @@ class Iinc(data: ClassfileStream, pc: Int) extends OpcodeInfo(MnemonicTable.iinc
 
 	def getIndex(): Int = index
 	def getConst(): Int = const
-
 	override def toString(): String = super.toString() + ": " + index + ", " + const
 }

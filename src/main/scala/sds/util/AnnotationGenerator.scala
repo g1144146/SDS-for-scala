@@ -2,8 +2,12 @@ package sds.util
 
 import sds.classfile.ClassfileStream
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
-import sds.classfile.attribute.annotation.{Annotation => Ann, ElementValue => Element,
-                                           ElementValuePair => Pair, EnumConstValue => Enum}
+import sds.classfile.attribute.annotation.{
+  Annotation       => Ann,
+  ElementValue     => Element,
+  ElementValuePair => Pair,
+  EnumConstValue   => Enum
+}
 import sds.util.{MultiArgsStringBuilder => Builder}
 import sds.util.DescriptorParser.parse
 import sds.util.Utf8ValueExtractor.extract

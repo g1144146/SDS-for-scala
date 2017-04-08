@@ -1,16 +1,15 @@
 package sds.classfile.bytecode
 
-import sds.classfile.ClassfileStream
-import sds.classfile.constant_pool.ConstantInfo
+import sds.classfile.{ClassfileStream => Stream}
+import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 
-import sds.classfile.bytecode.{MnemonicTable => Table}
+import sds.classfile.bytecode.{MnemonicTable => T}
 import sds.classfile.constant_pool.ConstantType.{DOUBLE, FLOAT, INTEGER, LONG, STRING, CLASS}
 import sds.util.{MultiArgsStringBuilder => Builder}
 
-class HasReferenceOpcode(data: ClassfileStream, pool: Array[ConstantInfo], _type: Table.Value, pc: Int) extends
-OpcodeInfo(_type, pc) {
-	protected val index: Int = if(_type == Table.ldc) data.readUnsignedByte() else data.readShort()
-	private   val ldcType: String = if(Set(Table.ldc, Table.ldc_w, Table.ldc2_w).contains(_type)) {
+class HasReferenceOpcode(data: Stream, pool: Array[CInfo], _type: T.Value, pc: Int) extends OpcodeInfo(_type, pc) {
+	protected val index: Int = if(_type == T.ldc) data.readUnsignedByte() else data.readShort()
+	private val ldcType: String = if(Set(T.ldc, T.ldc_w, T.ldc2_w).contains(_type)) {
 		pool(index - 1).getTag() match {
 			case DOUBLE  => "double"
 			case FLOAT   => "float"
@@ -28,7 +27,7 @@ OpcodeInfo(_type, pc) {
 	def getIndex(): Int = index
 	def getOperand(): String = operand
 	def getLdcType(): String = _type match {
-		case Table.ldc | Table.ldc_w | Table.ldc2_w => ldcType
+		case T.ldc | T.ldc_w | T.ldc2_w => ldcType
 		case _ => throw new IllegalStateException("this opcode is not ldc(" + _type.toString() + ")")
 	}
 

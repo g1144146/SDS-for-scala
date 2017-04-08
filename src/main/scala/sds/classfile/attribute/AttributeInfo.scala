@@ -3,14 +3,16 @@ package sds.classfile.attribute
 import sds.classfile.{Information, ClassfileStream => Stream}
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
-import sds.classfile.attribute.AttributeType.{LocalVariableTable => LVT,
-											  LocalVariableTypeTable => LVTT,
-                                              RuntimeVisibleAnnotations => RVA,
-											  RuntimeInvisibleAnnotations => RIA,
-                                              RuntimeVisibleTypeAnnotations => RVTA,
-											  RuntimeInvisibleTypeAnnotations => RITA,
-                                              RuntimeVisibleParameterAnnotations => RVPA,
-											  RuntimeInvisibleParameterAnnotations => RIPA}
+import sds.classfile.attribute.AttributeType.{
+  LocalVariableTable                   => LVT,
+  LocalVariableTypeTable               => LVTT,
+  RuntimeVisibleAnnotations            => RVA,
+  RuntimeInvisibleAnnotations          => RIA,
+  RuntimeVisibleTypeAnnotations        => RVTA,
+  RuntimeInvisibleTypeAnnotations      => RITA,
+  RuntimeVisibleParameterAnnotations   => RVPA,
+  RuntimeInvisibleParameterAnnotations => RIPA
+}
 
 abstract class AttributeInfo(private val _type: AttributeType.Value) extends Information {
 	def getType(): AttributeType.Value = _type

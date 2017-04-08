@@ -1,13 +1,22 @@
 package sds.util
 
-import collection.mutable.{ArrayBuffer => Buffer, HashMap => Map, LinkedHashMap => Linked}
-import sds.classfile.attribute.{StackMapFrame => Frame,
-                                SameLocals1StackItemFrame => SLSIF,
-								SameLocals1StackItemFrameExtended => SLSIFE,
-								ChopFrame => Chop, SameFrameExtended => SFE,
-								AppendFrame => Append, FullFrame => Full,
-                                VerificationTypeInfo => Verify,
-                                ObjectVar, UninitializedVar => UVar}
+import collection.mutable.{
+  ArrayBuffer   => Buffer,
+  HashMap       => Map,
+  LinkedHashMap => Linked
+}
+import sds.classfile.attribute.{
+  StackMapFrame                     => Frame,
+  SameLocals1StackItemFrame         => SLSIF,
+  SameLocals1StackItemFrameExtended => SLSIFE,
+  ChopFrame                         => Chop,
+  SameFrameExtended                 => SFE,
+  AppendFrame                       => Append,
+  FullFrame                         => Full,
+  VerificationTypeInfo              => Verify,
+  ObjectVar                         => Obj,
+  UninitializedVar                  => UVar
+}
 import sds.classfile.attribute.FrameType._
 import sds.classfile.attribute.VerificationType._
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
@@ -104,7 +113,7 @@ object StackMapFrameParser {
 			case NullVar              => "null";
 			case UninitializedThisVar => "";
 			case ObjectVar =>
-				val ov: ObjectVar = info.asInstanceOf[ObjectVar];
+				val ov: Obj = info.asInstanceOf[Obj];
 				val value: String = extract(ov.getCPool(), pool);
 				if(value.startsWith("[")) parse(value) else value;
 			case UninitializedVar =>

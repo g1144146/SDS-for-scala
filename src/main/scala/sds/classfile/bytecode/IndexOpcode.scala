@@ -6,6 +6,5 @@ class IndexOpcode(data: ClassfileStream, _type: MnemonicTable.Value, pc: Int) ex
 	private val index: Int = data.readUnsignedByte()
 
 	def getIndex(): Int = index
-
 	override def toString(): String = super.toString() + ": " + index
 }

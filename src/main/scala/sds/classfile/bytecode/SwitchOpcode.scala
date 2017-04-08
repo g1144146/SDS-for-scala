@@ -1,10 +1,9 @@
 package sds.classfile.bytecode
 
-import sds.classfile.ClassfileStream
+import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.bytecode.{MnemonicTable => Table}
 
-sealed abstract class SwitchOpcode(data: ClassfileStream, _type: Table.Value, pc: Int) extends
-OpcodeInfo(_type, pc) {
+sealed abstract class SwitchOpcode(data: Stream, _type: Table.Value, pc: Int) extends OpcodeInfo(_type, pc) {
 	private var default: Int = -1
 	protected var offset: Array[Int] = null
 	init()
@@ -22,7 +21,7 @@ OpcodeInfo(_type, pc) {
 		}
 	}
 
-	private def skip(index: Int, data: ClassfileStream): Unit = {
+	private def skip(index: Int, data: Stream): Unit = {
 		if(((index + pc) % 4) == 0) {
 			return
 		}
@@ -33,11 +32,11 @@ OpcodeInfo(_type, pc) {
 	override def toString(): String = super.toString() + ": "
 }
 
-class TableSwitch(data: ClassfileStream, pc: Int) extends SwitchOpcode(data, Table.tableswitch, pc) {
+class TableSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, Table.tableswitch, pc) {
 	override def toString(): String = super.toString() + offset.mkString("[", ",", "]")
 }
 
-class LookupSwitch(data: ClassfileStream, pc: Int) extends SwitchOpcode(data, Table.lookupswitch, pc) {
+class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, Table.lookupswitch, pc) {
 	private var _match: Array[Int] = null
 	initOffset()
 
@@ -53,8 +52,7 @@ class LookupSwitch(data: ClassfileStream, pc: Int) extends SwitchOpcode(data, Ta
 		})
 	}
 
-	override def toString(): String = {
+	override def toString(): String =
 		super.toString() + (0 until _match.length).map((_: Int) => (_match(_), offset(_)))
 		                   .toArray.mkString("[", "_", "]")
-	}
 }

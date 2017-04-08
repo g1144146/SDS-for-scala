@@ -187,7 +187,7 @@ object MnemonicTable extends Enumeration {
 	invokespecial  ,
 	invokestatic   ,
 	invokeinterface,
-	inovokedynamic ,
+	invokedynamic ,
 	_new,
 	newarray   ,
 	anewarray  ,
