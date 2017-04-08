@@ -5,7 +5,7 @@ import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo, Utf8Info => Utf8}
 
-class Code(data: Stream, pool: Array[CInfo]) extends AttributeInfo(AttributeType.Code) {
+class Code(data: Stream, pool: Array[CInfo]) extends AttributeInfo {
 	private val maxStack:  Int = data.readShort()
 	private val maxLocals: Int = data.readShort()
 	private val opcodes: Array[Opcode] = initOpcodes()

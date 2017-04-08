@@ -1,3 +1,3 @@
 package sds.classfile.attribute
 
-class Deprecated extends AttributeInfo(AttributeType.Deprecated) {}
+class Deprecated extends AttributeInfo {}

@@ -6,7 +6,7 @@ import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 import sds.util.AnnotationGenerator.generate
 import sds.util.{MultiArgsStringBuilder => Builder}
 
-class RuntimeTypeAnnotations(data: Stream, pool: Array[CInfo], t: AttributeType.Value) extends  AttributeInfo(t) {
+class RuntimeTypeAnnotations(data: Stream, pool: Array[CInfo], private val name: String) extends AttributeInfo {
 	private var types: Array[TypeAnnotation] = null
 	private var annotations: Array[String] = null
 	init()
@@ -26,7 +26,7 @@ class RuntimeTypeAnnotations(data: Stream, pool: Array[CInfo], t: AttributeType.
 	override def toString(): String = {
 		val b: Builder = new Builder()
 		val sep: String = System.getProperty("line.separator")
-		b.append("   ", super.toString(), ":", sep)
+		b.append("   ", name, ":", sep)
 		(0 until types.length).foreach((index: Int) => {
 			b.append("      ", index, ".", annotations(index), sep)
 			b.append("         ", types(index).getInfo(), sep)

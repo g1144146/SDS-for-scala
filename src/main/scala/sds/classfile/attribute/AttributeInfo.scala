@@ -3,20 +3,9 @@ package sds.classfile.attribute
 import sds.classfile.{Information, ClassfileStream => Stream}
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
-import sds.classfile.attribute.AttributeType.{
-  LocalVariableTable                   => LVT,
-  LocalVariableTypeTable               => LVTT,
-  RuntimeVisibleAnnotations            => RVA,
-  RuntimeInvisibleAnnotations          => RIA,
-  RuntimeVisibleTypeAnnotations        => RVTA,
-  RuntimeInvisibleTypeAnnotations      => RITA,
-  RuntimeVisibleParameterAnnotations   => RVPA,
-  RuntimeInvisibleParameterAnnotations => RIPA
-}
 
-abstract class AttributeInfo(private val _type: AttributeType.Value) extends Information {
-	def getType(): AttributeType.Value = _type
-	override def toString(): String = _type.toString()
+abstract class AttributeInfo() extends Information {
+	override def toString(): String = getClass().getSimpleName()
 }
 
 object AttributeInfo {
@@ -32,15 +21,15 @@ object AttributeInfo {
 			case "Exceptions"                           => new Exceptions(data, pool)
 			case "InnerClasses"                         => new InnerClasses(data, pool)
 			case "LineNumberTable"                      => new LineNumberTable(data, pool)
-			case "LocalVariableTable"                   => new LocalVariable(data, pool, LVT)
-			case "LocalVariableTypeTable"               => new LocalVariable(data, pool, LVTT)
+			case "LocalVariableTable"
+			  |  "LocalVariableTypeTable"               => new LocalVariable(data, pool, name)
 			case "MethodParameters"                     => new MethodParameters(data, pool)
-			case "RuntimeInvisibleAnnotations"          => new RuntimeAnnotations(data, pool, RIA)
-			case "RuntimeInvisibleParameterAnnotations" => new RuntimeParameterAnnotations(data, pool, RIPA)
-			case "RuntimeInvisibleTypeAnnotations"      => new RuntimeTypeAnnotations(data, pool, RITA)
-			case "RuntimeVisibleAnnotations"            => new RuntimeAnnotations(data, pool, RVA)
-			case "RuntimeVisibleParameterAnnotations"   => new RuntimeParameterAnnotations(data, pool, RVPA)
-			case "RuntimeVisibleTypeAnnotations"        => new RuntimeTypeAnnotations(data, pool, RVTA)
+			case "RuntimeInvisibleAnnotations"
+			  |  "RuntimeVisibleAnnotations"            => new RuntimeAnnotations(data, pool, name)
+			case "RuntimeInvisibleParameterAnnotations"
+			  |  "RuntimeVisibleParameterAnnotations"   => new RuntimeParameterAnnotations(data, pool, name)
+			case "RuntimeInvisibleTypeAnnotations"
+			  |  "RuntimeVisibleTypeAnnotations"        => new RuntimeTypeAnnotations(data, pool, name)
 			case "Signature"                            => new Signature(data, pool)
 			case "SourceDebugExtension"                 => new SourceDebugExtension(data, len)
 			case "SourceFile"                           => new SourceFile(data, pool)

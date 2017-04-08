@@ -3,7 +3,7 @@ package sds.classfile.bytecode
 import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.bytecode.{MnemonicTable => Table}
 
-sealed abstract class SwitchOpcode(data: Stream, _type: Table.Value, pc: Int) extends OpcodeInfo(_type, pc) {
+sealed abstract class SwitchOpcode(data: Stream, _type: String, pc: Int) extends OpcodeInfo(_type, pc) {
 	private var default: Int = -1
 	protected var offset: Array[Int] = null
 	init()
@@ -14,7 +14,8 @@ sealed abstract class SwitchOpcode(data: Stream, _type: Table.Value, pc: Int) ex
 	def init(): Unit = {
 		skip(1, data)
 		this.default = data.readInt() + pc
-		if(_type == Table.tableswitch) {
+		if(_type.equals(Table.OPCODES(0xaa))) {
+			// in case of "tableswitch""
 			val low:  Int = data.readInt()
 			val high: Int = data.readInt()
 			this.offset = (0 until (high - low + 1)).map((_: Int) => data.readInt() + pc).toArray
@@ -32,11 +33,11 @@ sealed abstract class SwitchOpcode(data: Stream, _type: Table.Value, pc: Int) ex
 	override def toString(): String = super.toString() + ": "
 }
 
-class TableSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, Table.tableswitch, pc) {
+class TableSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "tableswitch", pc) {
 	override def toString(): String = super.toString() + offset.mkString("[", ",", "]")
 }
 
-class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, Table.lookupswitch, pc) {
+class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswitch", pc) {
 	private var _match: Array[Int] = null
 	initOffset()
 

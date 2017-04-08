@@ -1,11 +1,10 @@
 package sds.classfile.attribute
 
 import sds.classfile.ClassfileStream
-import sds.classfile.attribute.AttributeType.BootstrapMethods
 import sds.classfile.constant_pool.ConstantInfo
 import sds.util.{MultiArgsStringBuilder => Builder}
 
-class BootstrapMethods(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo(BootstrapMethods) {
+class BootstrapMethods(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo {
 	/**
 	 * (bsm_reference, bootstrap_args)
 	 */

@@ -3,7 +3,7 @@ package sds.classfile.attribute
 import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 
-class ConstantValue(data: Stream, pool: Array[CInfo]) extends AttributeInfo(AttributeType.ConstantValue) {
+class ConstantValue(data: Stream, pool: Array[CInfo]) extends AttributeInfo {
 	private val value: String = extract(data.readShort(), pool)
 
 	def getValue(): String = value

@@ -1,10 +1,9 @@
 package sds.classfile.attribute
 
 import sds.classfile.ClassfileStream
-import sds.classfile.attribute.AttributeType.EnclosingMethod
 import sds.classfile.constant_pool.ConstantInfo
 
-class EnclosingMethod(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo(EnclosingMethod) {
+class EnclosingMethod(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo {
 	private val _class: String = extract(data.readShort(), pool)
 	private val method: String = ((i: Int) => if(i - 1 > 0) extract(i, pool) else "")(data.readShort())
 

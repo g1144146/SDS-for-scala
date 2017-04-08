@@ -2,7 +2,7 @@ package sds.classfile.bytecode
 
 import sds.classfile.ClassfileStream
 
-class NewArray(data: ClassfileStream, pc: Int) extends OpcodeInfo(MnemonicTable.newarray, pc) {
+class NewArray(data: ClassfileStream, pc: Int) extends OpcodeInfo("newarray", pc) {
 	private val atype: String = data.readUnsignedByte() match {
 		case 4  => "boolean"
 		case 5  => "char"

@@ -1,12 +1,11 @@
 package sds.classfile.attribute
 
 import sds.classfile.ClassfileStream
-import sds.classfile.attribute.AttributeType.InnerClasses
 import sds.classfile.constant_pool.ConstantInfo
 import sds.util.{MultiArgsStringBuilder => Builder}
 import sds.util.AccessFlag.get
 
-class InnerClasses(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo(InnerClasses) {
+class InnerClasses(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo {
 	private val classes: Array[Array[String]] = (0 until data.readShort()).map((index: Int) => {
 		val f: ((Int) => String) = (index: Int) => if(check(index, pool.length)) extract(index, pool) else ""
 		val inIndex: Int = data.readShort()

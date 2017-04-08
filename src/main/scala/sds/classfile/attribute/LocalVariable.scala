@@ -4,7 +4,7 @@ import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 import sds.util.DescriptorParser.parse
 
-class LocalVariable(data: Stream, pool: Array[CInfo], t: AttributeType.Value) extends AttributeInfo(t) {
+class LocalVariable(data: Stream, pool: Array[CInfo], private val name: String) extends AttributeInfo {
 	private var table: Array[Array[Int]] = null
 	private var nameTable: Array[Array[String]] = null
 	init()
@@ -29,7 +29,7 @@ class LocalVariable(data: Stream, pool: Array[CInfo], t: AttributeType.Value) ex
 	def getTable(): Array[Array[Int]] = table
 	def getNameTable: Array[Array[String]] = nameTable
 	override def toString(): String = {
-		val b: sds.util.MultiArgsStringBuilder = new sds.util.MultiArgsStringBuilder(super.toString())
+		val b: sds.util.MultiArgsStringBuilder = new sds.util.MultiArgsStringBuilder(name)
 		b.append(": ")
 		(0 until table.length).foreach((i: Int) => {
 			b.append("[(", table(3), "):", nameTable(1), " ", nameTable(0), "{", table(0), "-", table(1))

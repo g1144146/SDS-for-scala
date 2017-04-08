@@ -5,11 +5,11 @@ import sds.classfile.Information
 import sds.classfile.bytecode.{MnemonicTable => Table}
 import sds.classfile.constant_pool.ConstantInfo
 
-class OpcodeInfo(protected val _type: Table.Value, protected val pc: Int) extends Information {
-	def getType(): Table.Value = _type
+class OpcodeInfo(protected val _type: String, protected val pc: Int) extends Information {
+	def getType(): String = _type
 	def getPc(): Int = pc
 
-	override def toString(): String = pc + " - " + _type.toString()
+	override def toString(): String = pc + " - " + _type
 }
 
 object OpcodeInfo {
@@ -19,12 +19,12 @@ object OpcodeInfo {
 		   (0x3b to 0x83).contains(opcode)  || (0x85 to 0x98).contains(opcode)  ||
 		   (0xac to 0xb1).contains(opcode)  || opcode == 0xbe || opcode == 0xbf ||
 		   opcode == 0xc2 || opcode == 0xc3 || opcode == 0xca ) {
-			return new OpcodeInfo(Table(opcode), pc);
+			return new OpcodeInfo(Table.OPCODES(opcode), pc);
 		}
 		opcode match {
 			case 0x10 /** bipush **/
 			  |  0x11 /** sipush **/
-			          => new PushOpcode(data, Table(opcode), pc);
+			          => new PushOpcode(data, Table.OPCODES(opcode), pc);
 			case 0x12  /** ldc **/
 			  |  0x13  /** ldc_w **/
 			  |  0x14  /** ldc2_w **/
@@ -39,7 +39,7 @@ object OpcodeInfo {
 			  |  0xc0  /** checkcast **/
 			  |  0xbd  /** anewarray **/
 			  |  0xc1 /** instanceof **/
-			          => new HasReferenceOpcode(data, pool, Table(opcode), pc);
+			          => new HasReferenceOpcode(data, pool, Table.OPCODES(opcode), pc);
 			case 0x15  /** iload **/
 			  |  0x16  /** lload **/
 			  |  0x17  /** fload **/
@@ -51,7 +51,7 @@ object OpcodeInfo {
 			  |  0x39  /** dstore **/
 			  |  0x3a  /** astore **/
 			  |  0xa9  /** ret **/
-			          => new IndexOpcode(data, Table(opcode), pc);
+			          => new IndexOpcode(data, Table.OPCODES(opcode), pc);
 			case 0x84 => new Iinc(data, pc);
 			case 0x99  /** ifeq **/
 			  |  0x9a  /** ifne **/
@@ -71,7 +71,7 @@ object OpcodeInfo {
 			  |  0xa8  /** jsr **/	
 			  |  0xc6  /** ifnull **/
 			  |  0xc7  /** ifnonnull **/
-			          => new BranchOpcode(data, Table(opcode), pc);
+			          => new BranchOpcode(data, Table.OPCODES(opcode), pc);
 			case 0xaa => new TableSwitch(data, pc);
 			case 0xab => new LookupSwitch(data, pc);
 			case 0xb9 => new InvokeInterface(data, pool, pc);
@@ -81,9 +81,9 @@ object OpcodeInfo {
 			case 0xc5 => new MultiANewArray(data, pool, pc);
 			case 0xc8  /** goto_w **/
 			  |  0xc9  /** jsr_w **/
-			          => new BranchWide(data, Table(opcode), pc);
-			case 0xfe => new OpcodeInfo(Table(0xcb), pc); 
-			case 0xff => new OpcodeInfo(Table(0xcc), pc);
+			          => new BranchWide(data, Table.OPCODES(opcode), pc);
+			case 0xfe => new OpcodeInfo(Table.OPCODES(0xcb), pc); 
+			case 0xff => new OpcodeInfo(Table.OPCODES(0xcc), pc);
 			case _    => throw new IllegalArgumentException("undefined opcode(" + opcode + ")");
 		}
 	}
