@@ -1,0 +1,7 @@
+language: scala
+scala:
+	- 2.12.1
+install:
+	- gradle check
+after_success:
+	- gradle clean test
