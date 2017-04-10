@@ -27,7 +27,7 @@ object AccessFlag {
 	                          NATIVE | ABSTRACT | STRICT | SYNTHETIC
 	private val NESTED: Int = PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL |
 	                          INTERFACE | ABSTRACT | SYNTHETIC | ANNOTATION | ENUM
-	private val LOCAL:  Int = FINAL | SYNTHETIC | MANDATED
+	private val LOCAL:  Int = FINAL
 
 	def get(flag: Int, _type: String): String = {
 		if(_type.eq("class")  && checkOr(flag, CLASS))  return getClassFlag(flag)
@@ -43,6 +43,7 @@ object AccessFlag {
 		if(checkAnd(flag, PUBLIC))     flagStr.append("public ")
 		if(checkAnd(flag, STATIC))     flagStr.append("static ")
 		if(checkAnd(flag, FINAL))      flagStr.append("final ")
+		if(checkAnd(flag, ABSTRACT))   flagStr.append("abstract ")
 		if(checkAnd(flag, SYNTHETIC))  flagStr.append("synthetic ")
 		if(checkAnd(flag, ANNOTATION)) flagStr.append("@interface ")
 		if(checkAnd(flag, ENUM))       flagStr.append("enum ")
@@ -77,22 +78,14 @@ object AccessFlag {
 		if(checkAnd(flag, STATIC))         flagStr.append("static ")
 		if(checkAnd(flag, FINAL))          flagStr.append("final ")
 		if(checkAnd(flag, SYNCHRONIZED))   flagStr.append("synchronized ")
-		if(checkAnd(flag, BRIDGE))         flagStr.append("bridge ")
 		if(checkAnd(flag, NATIVE))         flagStr.append("native ")
 		if(checkAnd(flag, ABSTRACT))       flagStr.append("abstract ")
-		if(checkAnd(flag, STRICT))         flagStr.append("strict ")
+		if(checkAnd(flag, STRICT))         flagStr.append("strictfp ")
 		if(checkAnd(flag, SYNTHETIC))      flagStr.append("synthetic ")
 		flagStr.toString()
 	}
 
-	private def getLocalFlag(flag: Int): String = {
-		val flagStr: StringBuilder = new StringBuilder()
-		if(checkAnd(flag, FINAL))     flagStr.append("final ")
-		if(checkAnd(flag, SYNTHETIC)) flagStr.append("synthetic ")
-		if(checkAnd(flag, MANDATED))  flagStr.append("mandated ")
-		flagStr.toString()
-	}
-
+	private def getLocalFlag(flag: Int): String = if(checkAnd(flag, FINAL)) "final " else ""
 	private def checkAnd(target: Int, flag: Int): Boolean = (target & flag) == flag
 	private def checkOr(target:  Int, flag: Int): Boolean = (target | flag) == flag
 }
