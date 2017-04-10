@@ -9,10 +9,9 @@ mainClassName = 'sds.Main'
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.12.1'
-
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.scalatest:scalatest_2.11:3.0.0'
-    testRuntime 'org.scala-lang.modules:scala-xml_2.11:1.0.6'
+    testCompile 'junit:junit:4.+'
+    testCompile 'org.scalatest:scalatest_2.12:+'
+    testRuntime 'org.scala-lang.modules:scala-xml_2.12:+'
 }
 
 jar {
