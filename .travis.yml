@@ -1,8 +1,10 @@
 language: scala
 
-scala:
-  - 2.12.1
 jdk:
   - oraclejdk8
+scala:
+  - 2.12.1
+scrip:
+  - gradle clean build
 # after_success:
 #   - gradle clean test
