@@ -1,5 +1,15 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.scoverage:gradle-scoverage:+'
+    }
+}
+
 apply plugin: 'scala'
 apply plugin: 'application'
+apply plugin: 'org.scoverage'
 
 repositories {
     mavenCentral()
@@ -8,8 +18,9 @@ repositories {
 mainClassName = 'sds.Main'
 
 dependencies {
+    scoverage "org.scoverage:scalac-scoverage-plugin_2.12:+", "org.scoverage:scalac-scoverage-runtime_2.12:+"
     compile 'org.scala-lang:scala-library:2.12.1'
-    testCompile 'junit:junit:4.+'
+    testCompile 'junit:junit:+'
     testCompile 'org.scalatest:scalatest_2.12:+'
     testRuntime 'org.scala-lang.modules:scala-xml_2.12:+'
 }
