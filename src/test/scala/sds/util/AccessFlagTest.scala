@@ -1,11 +1,10 @@
 package sds.util
 
 import org.junit.Test
-import org.hamcrest.Matcher._
 import org.scalatest.Assertions
 import sds.util.{AccessFlag => Flag}
 
-class AccessFlagSpec extends Assertions {
+class AccessFlagTest extends Assertions {
 	val PUBLIC:       Int = 0x0001
 	val PRIVATE:      Int = 0x0002
 	val PROTECTED:    Int = 0x0004
