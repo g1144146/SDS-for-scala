@@ -18,9 +18,8 @@ class HasReferenceOpcode(data: Stream, pool: Array[CInfo], _type: String, pc: In
 			case _       => ""
 		}
 	} else ""
-	protected val operand: String = if(ldcType.equals("String")) {
-		"\"" + Operand.get(this, pool) + "\""
-	} else Operand.get(this, pool)
+	protected val operand: String = if(ldcType.equals("String")) "\"" + extract(getIndex(), pool) + "\""
+	                                else                         extract(getIndex(), pool)
 
 	def getIndex(): Int = index
 	def getOperand(): String = operand

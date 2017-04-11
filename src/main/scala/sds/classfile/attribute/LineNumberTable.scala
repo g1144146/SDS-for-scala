@@ -27,12 +27,6 @@ class LineNumberTable(data: ClassfileStream, pool: Array[ConstantInfo]) extends 
 	}
 
 	def getTable(): Array[Array[Int]] = table
-	override def toString(): String = {
-		val b: Builder = new Builder(super.toString())
-		b.append(": ")
-		table.foreach((array: Array[Int]) => {
-			b.append("[range:", array(0), "-", array(1), "|line:" + array(2), "]_")
-		})
-		b.toString()
-	}
+	def getTableStr(): Array[String] = table.map((array: Array[Int]) => 
+		"[range:" +  array(0) + "-" + array(1) + "|line:" + array(2) + "]").toArray
 }

@@ -8,8 +8,8 @@ object Operand {
 		case branch: BranchOpcode       => branch.getBranch().toString
 		case iinc:   Iinc               => iinc.getIndex().toString +  "," + iinc.getConst().toString
 		case index:  IndexOpcode        => index.getIndex().toString
-		case inter:  InvokeInterface    => extract(inter.getCount(), pool)
-		case multi:  MultiANewArray     => extract(multi.getDimensions(), pool)
+		case inter:  InvokeInterface    => inter.getCount() + "," + extract(inter.getIndex(), pool)
+		case multi:  MultiANewArray     => multi.getDimensions() + "," + extract(multi.getIndex(), pool)
 		case array:  NewArray           => array.getAType()
 		case push:   PushOpcode         => push.getValue().toString
 		case wide:   Wide               => wide.getConst() + ", " + extract(wide.getIndex(), pool)

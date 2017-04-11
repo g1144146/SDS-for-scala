@@ -27,13 +27,5 @@ class LocalVariable(data: Stream, pool: Array[CInfo], private val name: String) 
 	}
 
 	def getTable(): Array[Array[Int]] = table
-	def getNameTable: Array[Array[String]] = nameTable
-	override def toString(): String = {
-		val b: sds.util.MultiArgsStringBuilder = new sds.util.MultiArgsStringBuilder(name)
-		b.append(": ")
-		(0 until table.length).foreach((i: Int) => {
-			b.append("[(", table(3), "):", nameTable(1), " ", nameTable(0), "{", table(0), "-", table(1))
-		})
-		b.toString()
-	}
+	def getNameTable(): Array[Array[String]] = nameTable
 }

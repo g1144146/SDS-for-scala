@@ -26,12 +26,13 @@ object DescriptorParser {
 							colon, wildCard, diamond, "([A-Z])", "(;)")
 		val replaced: String = desc.replace("/", ".").replace(";>", ">").replace(";)", ")")
 		val regex: Regex = pattern.mkString("|").r()
+		var beforeEndParen = true
 
 		lazy val getMatched: (Match => String) = (m: Match) => {
 			val matched: String = m.matched
 			val len: Int  = matched.length
-			val last: Int = matched.lastIndexOf("[")
 			if(matched.startsWith("[")) {
+				val last: Int = matched.lastIndexOf("[")
 				var _type: String = ""
 				if(matched.matches(prmPattern)) {
 					_type += parsePrim(matched.substring(len - 1))
@@ -42,8 +43,9 @@ object DescriptorParser {
 				_type += (0 until last).map((_: Int) => "[]").toArray.mkString
 				_type
 			} else if(matched.startsWith("L") || matched.matches("T[A-Z]+")) {
-				removeLangPrefix(matched.substring(1, matched.length))
+				removeLangPrefix(matched.substring(1, len))
 			} else if(matched.matches("""\(|\)|<|>""")) {
+				beforeEndParen = if(matched.equals(")")) false else true
 				matched
 			} else if(matched.equals(";:")) {
 				" & "
@@ -55,9 +57,9 @@ object DescriptorParser {
 				"? extends "
 			} else if(matched.equals(";")) {
 				","
-			} else if(hasAttribute && matched.matches("[A-Z]")) {
+			} else if(hasAttribute && matched.matches("[A-Z]") && beforeEndParen) {
 				matched
-			} else if(parsePrim(matched).length == 0) {
+			} else if(parsePrim(matched).length > 0) {
 				parsePrim(matched)
 			} else {
 				""

@@ -16,7 +16,6 @@ class StackMapTable(data: Stream, pool: Array[CInfo], opcodes: Array[Opcode]) ex
 			.map((_: Int) => StackMapFrame(data)).toArray, pool, opcodes)
 
 	def getEntries(): Linked[Int, Map[String, Buffer[String]]] = entries
-	override def toString(): String = super.toString() + ": " + entries
 }
 
 sealed abstract class StackMapFrame(private val tag: Int) {

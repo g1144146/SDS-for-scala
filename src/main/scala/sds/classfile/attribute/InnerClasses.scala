@@ -2,7 +2,6 @@ package sds.classfile.attribute
 
 import sds.classfile.ClassfileStream
 import sds.classfile.constant_pool.ConstantInfo
-import sds.util.{MultiArgsStringBuilder => Builder}
 import sds.util.AccessFlag.get
 
 class InnerClasses(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo {
@@ -19,11 +18,5 @@ class InnerClasses(data: ClassfileStream, pool: Array[ConstantInfo]) extends Att
 	}).toArray
 
 	def getClasses(): Array[Array[String]] = classes
-	def check(index: Int, size: Int): Boolean = (0 until size).contains(index)
-	override def toString(): String = {
-		val b: Builder = new Builder(super.toString())
-		b.append(": ")
-		classes.foreach((array: Array[String]) => b.append("[", array(3), array(0), "{in ", array(1), "}]"))
-		b.toString()
-	}
+	def check(index: Int, size: Int): Boolean = (0 until size).contains(index - 1)
 }
