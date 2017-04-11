@@ -5,6 +5,5 @@ jdk:
 scala:
   - 2.12.1
 scrip:
+  - gradle check --info
   - gradle clean build
-# after_success:
-#   - gradle clean test
