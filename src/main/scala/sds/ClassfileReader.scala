@@ -1,9 +1,17 @@
 package sds
 
-import java.io.{IOException, InputStream, RandomAccessFile};
+import java.io.{
+  IOException,
+  InputStream,
+  RandomAccessFile
+}
 import sds.classfile.{ClassfileStream, MemberInfo};
 import sds.classfile.attribute.AttributeInfo
-import sds.classfile.constant_pool.{ConstantInfo => CInfo, Utf8Info => Utf8, ConstantInfoAdapter => Adapter}
+import sds.classfile.constant_pool.{
+  ConstantInfo        => CInfo,
+  Utf8Info            => Utf8,
+  ConstantInfoAdapter => Adapter
+}
 import sds.classfile.constant_pool.ConstantType.{LONG, DOUBLE}
 
 class ClassfileReader {
