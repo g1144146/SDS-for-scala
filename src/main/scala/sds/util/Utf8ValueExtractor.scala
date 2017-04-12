@@ -11,33 +11,25 @@ import sds.classfile.constant_pool.{
   NameAndTypeInfo   => Name,
   InvokeDynamicInfo => Invoke
 }
-import sds.classfile.constant_pool.ConstantType._
 import sds.util.DescriptorParser.{parse, removeLangPrefix}
 
 object Utf8ValueExtractor {
 	def extract(index: Int, pool: Array[ConstantInfo]): String = extract(pool(index - 1), pool)
 	
-	def extract(target: ConstantInfo, pool: Array[ConstantInfo]): String = {
-		target.getTag() match {
-			case UTF8    => target.asInstanceOf[Utf8].getValue()
-			case INTEGER => target.asInstanceOf[IntInfo].getInt().toString()
-			case FLOAT   => target.asInstanceOf[FloatInfo].getFloat().toString()
-			case LONG    => target.asInstanceOf[LongInfo].getLong.toString()
-			case DOUBLE  => target.asInstanceOf[DoubleInfo].getDouble().toString()
-			case STRING  => target.asInstanceOf[StringInfo].getString().toString()
-			case CLASS   =>
-				val c: Class = target.asInstanceOf[Class]
-				removeLangPrefix(extract(pool(c.getIndex() - 1), pool).replace("/", "."))
-			case FIELD | METHOD | INTERFACE =>
-				val m: Member = target.asInstanceOf[Member]
-				extract(pool(m.getClassIndex() - 1), pool) + "." + extract(pool(m.getNameAndType() - 1), pool)
-			case NAME_AND_TYPE =>
-				val name: Name = target.asInstanceOf[Name]
-				extract(pool(name.getName() - 1), pool) + "|" + parse(extract(pool(name.getDesc() - 1), pool))
-			case HANDLE         => extract(pool(target.asInstanceOf[Handle].getIndex() - 1), pool)
-			case TYPE           => parse(extract(pool(target.asInstanceOf[Type].getDesc() - 1), pool))
-			case INVOKE_DYNAMIC => extract(pool(target.asInstanceOf[Invoke].getNameAndType() - 1), pool)
-			case _ => throw new IllegalArgumentException("unknown constant info tag(" + target.getTag + ").")
-		}
+	def extract(target: ConstantInfo, pool: Array[ConstantInfo]): String = target match {
+		case utf8:   Utf8       => utf8.getValue()
+		case int:    IntInfo    => int.getInt().toString()
+		case float:  FloatInfo  => float.getFloat().toString()
+		case long:   LongInfo   => long.getLong.toString()
+		case double: DoubleInfo => double.getDouble().toString()
+		case str:    StringInfo => str.getString().toString()
+		case c: Class  => removeLangPrefix(extract(pool(c.getIndex() - 1), pool).replace("/", "."))
+		case m: Member =>
+			extract(pool(m.getClassIndex() - 1), pool) + "." + extract(pool(m.getNameAndType() - 1), pool)
+		case n: Name   => extract(pool(n.getName() - 1), pool) + "|" + parse(extract(pool(n.getDesc() - 1), pool))
+		case handle: Handle => extract(pool(handle.getIndex() - 1), pool)
+		case _type:  Type   => parse(extract(pool(_type.getDesc() - 1), pool))
+		case invoke: Invoke => extract(pool(invoke.getNameAndType() - 1), pool)
+		case _ => throw new IllegalArgumentException("unknown constant info tag(" + target.getTag + ").")
 	}
 }
