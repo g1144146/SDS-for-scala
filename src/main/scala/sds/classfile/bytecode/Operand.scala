@@ -1,7 +1,7 @@
 package sds.classfile.bytecode
 
 import sds.classfile.constant_pool.ConstantInfo
-import sds.util.Utf8ValueExtractor.extract
+import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 
 object Operand {
 	def get(op: OpcodeInfo, pool: Array[ConstantInfo]): String = op match {

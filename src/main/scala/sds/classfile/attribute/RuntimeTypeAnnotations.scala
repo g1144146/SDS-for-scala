@@ -3,7 +3,7 @@ package sds.classfile.attribute
 import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.attribute.annotation.{ElementValuePair => Pair}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
-import sds.util.AnnotationGenerator.generate
+import sds.classfile.attribute.AnnotationGenerator.generate
 import sds.util.{MultiArgsStringBuilder => Builder}
 
 class RuntimeTypeAnnotations(data: Stream, pool: Array[CInfo], private val name: String) extends AttributeInfo {

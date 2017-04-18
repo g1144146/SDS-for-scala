@@ -1,4 +1,4 @@
-package sds.util
+package sds.classfile.attribute
 
 import sds.classfile.ClassfileStream
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
@@ -8,9 +8,9 @@ import sds.classfile.attribute.annotation.{
   ElementValuePair => Pair,
   EnumConstValue   => Enum
 }
+import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.{MultiArgsStringBuilder => Builder}
 import sds.util.DescriptorParser.parse
-import sds.util.Utf8ValueExtractor.extract
 
 object AnnotationGenerator {
 	def generate(data: ClassfileStream, pool: Array[CInfo]): String = {

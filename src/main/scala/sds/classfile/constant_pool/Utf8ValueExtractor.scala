@@ -1,8 +1,6 @@
-package sds.util
+package sds.classfile.constant_pool
 
 import sds.classfile.constant_pool.{
-  ConstantInfo, IntInfo, FloatInfo,
-  LongInfo, DoubleInfo, StringInfo,
   ClassInfo         => Class,
   HandleInfo        => Handle,
   TypeInfo          => Type,

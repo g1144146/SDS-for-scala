@@ -1,4 +1,4 @@
-package sds.util
+package sds.classfile.attribute
 
 import collection.mutable.{
   ArrayBuffer   => Buffer,
@@ -6,24 +6,15 @@ import collection.mutable.{
   LinkedHashMap => Linked
 }
 import sds.classfile.attribute.{
-  StackMapFrame => Frame,
-  SameFrame,
-  SameLocals1StackItemFrame,
-  SameLocals1StackItemFrameExtended,
-  ChopFrame,
-  SameFrameExtended,
-  AppendFrame,
-  FullFrame,
-  VerificationTypeInfo => Verify,
-  ObjectVar,
-  UninitializedVar
+  StackMapFrame        => Frame,
+  VerificationTypeInfo => Verify
 }
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 
 import sds.classfile.bytecode.Operand.get
+import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.DescriptorParser.parse
-import sds.util.Utf8ValueExtractor.extract
 
 object StackMapFrameParser {
 	private def getBefore(parsed: Linked[Int, Map[String, Buffer[String]]], before: Int, _type: String):

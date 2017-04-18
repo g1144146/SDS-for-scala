@@ -18,8 +18,8 @@ import sds.classfile.attribute.{
 }
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.ConstantInfo
+import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.AccessFlag.get
-import sds.util.Utf8ValueExtractor.extract
 
 class ClassfilePrinter(private val cf: Classfile) {
 	private val pool: Array[ConstantInfo] = cf.pool

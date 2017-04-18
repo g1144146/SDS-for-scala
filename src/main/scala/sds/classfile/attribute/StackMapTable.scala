@@ -9,7 +9,7 @@ import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.attribute.{VerificationTypeInfo => VTI}
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
-import sds.util.StackMapFrameParser.parseFrame
+import sds.classfile.attribute.StackMapFrameParser.parseFrame
 
 class StackMapTable(data: Stream, pool: Array[CInfo], opcodes: Array[Opcode]) extends AttributeInfo {
 	private val entries: Linked[Int, Map[String, Buffer[String]]] = parseFrame((0 until data.readShort())
