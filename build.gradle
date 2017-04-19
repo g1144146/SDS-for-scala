@@ -35,3 +35,7 @@ jar {
 task initDirs {
 	sourceSets*.resources*.each( { it.mkdirs() })
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.2'
+}
