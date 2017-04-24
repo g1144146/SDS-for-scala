@@ -5,10 +5,9 @@ import sds.classfile.Information
 import sds.classfile.bytecode.{MnemonicTable => Table}
 import sds.classfile.constant_pool.ConstantInfo
 
-class OpcodeInfo(protected val _type: String, protected val pc: Int) extends Information {
-	def getType(): String = _type
-	def getPc(): Int = pc
-
+class OpcodeInfo(__type: String, _pc: Int) extends Information {
+	def _type: String = __type
+	def pc: Int = _pc
 	override def toString(): String = pc + " - " + _type
 }
 
@@ -22,9 +21,8 @@ object OpcodeInfo {
 			return new OpcodeInfo(Table.OPCODES(opcode), pc);
 		}
 		opcode match {
-			case 0x10 /** bipush **/
-			  |  0x11 /** sipush **/
-			          => new PushOpcode(data, Table.OPCODES(opcode), pc);
+			case 0x10 => new PushOpcode(data.readByte(), Table.OPCODES(opcode), pc)  /** bipush **/
+            case 0x11 => new PushOpcode(data.readShort(), Table.OPCODES(opcode), pc) /** sipush **/
 			case 0x12  /** ldc **/
 			  |  0x13  /** ldc_w **/
 			  |  0x14  /** ldc2_w **/
@@ -51,8 +49,8 @@ object OpcodeInfo {
 			  |  0x39  /** dstore **/
 			  |  0x3a  /** astore **/
 			  |  0xa9  /** ret **/
-			          => new IndexOpcode(data, Table.OPCODES(opcode), pc);
-			case 0x84 => new Iinc(data, pc);
+			          => new IndexOpcode(data.readUnsignedByte(), Table.OPCODES(opcode), pc);
+			case 0x84 => new Iinc(data.readUnsignedByte(), data.readByte(), pc);
 			case 0x99  /** ifeq **/
 			  |  0x9a  /** ifne **/
 			  |  0x9b  /** iflt **/
@@ -71,17 +69,17 @@ object OpcodeInfo {
 			  |  0xa8  /** jsr **/	
 			  |  0xc6  /** ifnull **/
 			  |  0xc7  /** ifnonnull **/
-			          => new BranchOpcode(data, Table.OPCODES(opcode), pc);
+			          => new BranchOpcode(data.readShort(), Table.OPCODES(opcode), pc);
 			case 0xaa => new TableSwitch(data, pc);
 			case 0xab => new LookupSwitch(data, pc);
 			case 0xb9 => new InvokeInterface(data, pool, pc);
 			case 0xba => new InvokeDynamic(data, pool, pc);
-			case 0xbc => new NewArray(data, pc);
+			case 0xbc => new NewArray(data.readUnsignedByte(), pc);
 			case 0xc4 => new Wide(data, pool, pc);
 			case 0xc5 => new MultiANewArray(data, pool, pc);
 			case 0xc8  /** goto_w **/
 			  |  0xc9  /** jsr_w **/
-			          => new BranchWide(data, Table.OPCODES(opcode), pc);
+			          => new BranchOpcode(data.readInt(), Table.OPCODES(opcode), pc);
 			case 0xfe => new OpcodeInfo(Table.OPCODES(0xcb), pc); 
 			case 0xff => new OpcodeInfo(Table.OPCODES(0xcc), pc);
 			case _    => throw new IllegalArgumentException("undefined opcode(" + opcode + ")");

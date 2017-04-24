@@ -2,8 +2,8 @@ package sds.classfile.attribute
 
 import sds.classfile.{ClassfileStream => Stream}
 
-sealed abstract class VerificationTypeInfo(private val tag: Int) {
-	def getTag(): Int = tag
+sealed abstract class VerificationTypeInfo(private val _tag: Int) {
+	def tag: Int = _tag
 	override def toString(): String = getClass().getSimpleName()
 }
 
@@ -28,10 +28,10 @@ class VerificationTypeInfoAdapter(tag: Int, _type: String) extends VerificationT
 	override def toString(): String = _type
 }
 
-class ObjectVar(tag: Int, cpool: Int) extends VerificationTypeInfo(tag) {
-	def getCPool(): Int = cpool
+class ObjectVar(tag: Int, _cpool: Int) extends VerificationTypeInfo(tag) {
+	def cpool: Int = _cpool
 }
 
-class UninitializedVar(tag: Int, offset: Int) extends VerificationTypeInfo(tag) {
-	def getOffset(): Int = offset
+class UninitializedVar(tag: Int, _offset: Int) extends VerificationTypeInfo(tag) {
+	def offset: Int = _offset
 }

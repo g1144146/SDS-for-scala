@@ -1,9 +1,7 @@
 package sds.classfile.bytecode
 
-import sds.classfile.ClassfileStream
-
-class NewArray(data: ClassfileStream, pc: Int) extends OpcodeInfo("newarray", pc) {
-	private val atype: String = data.readUnsignedByte() match {
+class NewArray(_atype: Int, pc: Int) extends OpcodeInfo("newarray", pc) {
+	def atype: String = _atype match {
 		case 4  => "boolean"
 		case 5  => "char"
 		case 6  => "float"
@@ -14,7 +12,5 @@ class NewArray(data: ClassfileStream, pc: Int) extends OpcodeInfo("newarray", pc
 		case 11 => "long"
 		case _  => throw new RuntimeException("unknown type.")
 	}
-
-	def getAType(): String = atype
 	override def toString(): String = super.toString() + ": " + atype
 }

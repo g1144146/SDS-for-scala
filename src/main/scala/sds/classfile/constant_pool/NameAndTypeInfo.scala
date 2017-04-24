@@ -1,12 +1,7 @@
 package sds.classfile.constant_pool
 
-import sds.classfile.ClassfileStream
-
-class NameAndTypeInfo(data: ClassfileStream) extends ConstantInfo(ConstantType.NAME_AND_TYPE) {
-	private val name: Int = data.readShort()
-	private val desc: Int = data.readShort()
-
-	def getName(): Int = name
-	def getDesc(): Int = desc
+class NameAndTypeInfo(_name: Int, _desc: Int) extends ConstantInfo(ConstantType.NAME_AND_TYPE) {
+	def name: Int = _name
+	def desc: Int = _desc
 	override def toString(): String = super.toString() + "\t#" + name + ":#" + desc
 }

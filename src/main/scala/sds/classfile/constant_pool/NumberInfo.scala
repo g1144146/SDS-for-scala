@@ -1,17 +1,10 @@
 package sds.classfile.constant_pool
 
 import java.lang.Number
-import sds.classfile.ClassfileStream
 import sds.classfile.constant_pool.ConstantType.{INTEGER, FLOAT, LONG, DOUBLE}
 
-abstract class NumberInfo(tag: Int, data: ClassfileStream) extends ConstantInfo(tag) {
-	protected val number: Number = tag match {
-		case INTEGER => data.readInt()
-		case FLOAT   => data.readFloat()
-		case LONG    => data.readLong()
-		case DOUBLE  => data.readDouble()
-	}
-
+abstract class NumberInfo(tag: Int, _number: Number) extends ConstantInfo(tag) {
+    def number: Number = _number
 	override def toString(): String = {
 		val str: String = super.toString() + "\t"
 		tag match {
@@ -23,18 +16,18 @@ abstract class NumberInfo(tag: Int, data: ClassfileStream) extends ConstantInfo(
 	}
 }
 
-class IntInfo(data: ClassfileStream) extends NumberInfo(INTEGER, data) {
-	def getInt(): Int = number.intValue()
+class IntInfo(i: Int) extends NumberInfo(INTEGER, i) {
+	def int: Int = number.intValue()
 }
 
-class FloatInfo(data: ClassfileStream) extends NumberInfo(FLOAT, data) {
-	def getFloat(): Float = number.floatValue()
+class FloatInfo(f: Float) extends NumberInfo(FLOAT, f) {
+	def float: Float = number.floatValue()
 }
 
-class LongInfo(data: ClassfileStream) extends NumberInfo(LONG, data) {
-	def getLong(): Long = number.longValue()
+class LongInfo(l: Long) extends NumberInfo(LONG, l) {
+	def long: Long = number.longValue()
 }
 
-class DoubleInfo(data: ClassfileStream) extends NumberInfo(DOUBLE, data) {
-	def getDouble(): Double = number.doubleValue()
+class DoubleInfo(d: Double) extends NumberInfo(DOUBLE, d) {
+	def double: Double = number.doubleValue()
 }

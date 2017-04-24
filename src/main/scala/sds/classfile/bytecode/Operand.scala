@@ -5,13 +5,13 @@ import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 
 object Operand {
 	def get(op: OpcodeInfo, pool: Array[ConstantInfo]): String = op match {
-		case branch: BranchOpcode       => branch.getBranch().toString
-		case iinc:   Iinc               => iinc.getIndex().toString +  "," + iinc.getConst().toString
-		case index:  IndexOpcode        => index.getIndex().toString
+		case branch: BranchOpcode       => branch.branch.toString
+		case iinc:   Iinc               => iinc.index.toString +  "," + iinc.const.toString
+		case index:  IndexOpcode        => index.index.toString
 		case inter:  InvokeInterface    => inter.getCount() + "," + extract(inter.getIndex(), pool)
 		case multi:  MultiANewArray     => multi.getDimensions() + "," + extract(multi.getIndex(), pool)
-		case array:  NewArray           => array.getAType()
-		case push:   PushOpcode         => push.getValue().toString
+		case array:  NewArray           => array.atype
+		case push:   PushOpcode         => push.value.toString
 		case wide:   Wide               => wide.getConst() + ", " + extract(wide.getIndex(), pool)
 		case ref:    HasReferenceOpcode => extract(ref.getIndex(), pool)
 		case table:  TableSwitch        =>

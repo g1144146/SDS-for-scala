@@ -22,7 +22,7 @@ class ElementValue(data: ClassfileStream) {
 	private def init(): Unit = tag match {
 		case 'B'|'C'|'D'|'F'|'I'|'J'|'S'|'Z' => this.constVal = data.readShort()
 		case 'c' => this.classInfo  = data.readShort()
-		case 'e' => this.enumConst  = new EnumConstValue(data)
+		case 'e' => this.enumConst  = new EnumConstValue(data.readShort(), data.readShort())
 		case '@' => this.annotation = new Annotation(data)
 		case '[' => this.array      = new ArrayValue(data)
 		case _   => throw new RuntimeException("unknow tag(" + tag + ").")

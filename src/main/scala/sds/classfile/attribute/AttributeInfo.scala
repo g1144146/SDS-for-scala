@@ -3,6 +3,8 @@ package sds.classfile.attribute
 import sds.classfile.{Information, ClassfileStream => Stream}
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
+import sds.classfile.constant_pool.Utf8ValueExtractor.extract
+import sds.util.DescriptorParser.parse
 
 abstract class AttributeInfo() extends Information {
 	override def toString(): String = getClass().getSimpleName()
@@ -15,7 +17,7 @@ object AttributeInfo {
 			case "AnnotationDefault"                    => new AnnotationDefault(data, pool)
 			case "BootstrapMethods"                     => new BootstrapMethods(data, pool)
 			case "Code"                                 => new Code(data, pool)
-			case "ConstantValue"                        => new ConstantValue(data, pool)
+			case "ConstantValue"                        => new ConstantValue(extract(data.readShort(), pool))
 			case "Deprecated"                           => new Deprecated()
 			case "EnclosingMethod"                      => new EnclosingMethod(data, pool)
 			case "Exceptions"                           => new Exceptions(data, pool)
@@ -30,9 +32,9 @@ object AttributeInfo {
 			  |  "RuntimeVisibleParameterAnnotations"   => new RuntimeParameterAnnotations(data, pool, name)
 			case "RuntimeInvisibleTypeAnnotations"
 			  |  "RuntimeVisibleTypeAnnotations"        => new RuntimeTypeAnnotations(data, pool, name)
-			case "Signature"                            => new Signature(data, pool)
+			case "Signature"                            => new Signature(parse(extract(data.readShort(), pool), true))
 			case "SourceDebugExtension"                 => new SourceDebugExtension(data, len)
-			case "SourceFile"                           => new SourceFile(data, pool)
+			case "SourceFile"                           => new SourceFile(extract(data.readShort(), pool))
 			case "Synthetic"                            => new Synthetic()
 			case _ => throw new IllegalArgumentException("unknown attribute name(" + name + ").")
 		}

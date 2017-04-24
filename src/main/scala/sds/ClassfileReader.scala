@@ -49,7 +49,7 @@ class ClassfileReader {
 		lazy val genAttr: ((Int) => (AttributeInfo)) = (_: Int) => {
 			val name: Int = data.readShort()
 			val utf8: Utf8 = classfile.pool(name - 1).asInstanceOf[Utf8]
-			AttributeInfo(utf8.getValue(), data, classfile.pool)
+			AttributeInfo(utf8.value, data, classfile.pool)
 		}
 		lazy val genMember: ((Int) => (MemberInfo)) = (_: Int) => new MemberInfo(data, classfile.pool)
 		classfile.fields     = range(data.readShort()).map(genMember).toArray
@@ -64,7 +64,7 @@ class ClassfileReader {
 			return pool
 		}
 		pool(i) = CInfo(data)
-		if(pool(i).getTag() == LONG || pool(i).getTag() == DOUBLE) {
+		if(pool(i).tag == LONG || pool(i).tag == DOUBLE) {
 			pool(i + 1) = new Adapter()
 			readConstantPool(i + 2, pool)
 		} else {

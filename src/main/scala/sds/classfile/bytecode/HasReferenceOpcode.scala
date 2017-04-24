@@ -8,7 +8,7 @@ import sds.util.{MultiArgsStringBuilder => Builder}
 class HasReferenceOpcode(data: Stream, pool: Array[CInfo], _type: String, pc: Int) extends OpcodeInfo(_type, pc) {
 	protected val index: Int = if(_type.equals("ldc")) data.readUnsignedByte() else data.readShort()
 	private val ldcType: String = if(Set("ldc", "ldc_w", "ldc2_w").contains(_type)) {
-		pool(index - 1).getTag() match {
+		pool(index - 1).tag match {
 			case DOUBLE  => "double"
 			case FLOAT   => "float"
 			case INTEGER => "int"

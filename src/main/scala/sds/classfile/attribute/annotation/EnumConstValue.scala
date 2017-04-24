@@ -1,11 +1,6 @@
 package sds.classfile.attribute.annotation
 
-import sds.classfile.ClassfileStream
-
-class EnumConstValue(data: ClassfileStream) {
-	val typeName: Int = data.readShort()
-	val constName: Int = data.readShort()
-
-	def getTypeName():  Int = typeName
-	def getConstName(): Int = constName
+class EnumConstValue(_typeName: Int, _constName: Int) {
+	def typeName:  Int = _typeName
+	def constName(): Int = _constName
 }

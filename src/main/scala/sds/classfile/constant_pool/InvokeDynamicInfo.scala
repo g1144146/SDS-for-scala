@@ -1,12 +1,7 @@
 package sds.classfile.constant_pool
 
-import sds.classfile.ClassfileStream
-
-class InvokeDynamicInfo(data: ClassfileStream) extends ConstantInfo(ConstantType.INVOKE_DYNAMIC) {
-	private val bsmAtt: Int = data.readShort()
-	private val nameAndType: Int = data.readShort()
-
-	def getBsmAtt(): Int = bsmAtt
-	def getNameAndType(): Int = nameAndType
+class InvokeDynamicInfo(_bsmAtt: Int, _nameAndType: Int) extends ConstantInfo(ConstantType.INVOKE_DYNAMIC) {
+	def bsmAtt: Int = _bsmAtt
+	def nameAndType: Int = _nameAndType
 	override def toString(): String = super.toString() + "\t#" + bsmAtt + ":#" + nameAndType
 }

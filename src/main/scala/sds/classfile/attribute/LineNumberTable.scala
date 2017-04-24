@@ -2,7 +2,6 @@ package sds.classfile.attribute
 
 import sds.classfile.ClassfileStream
 import sds.classfile.constant_pool.ConstantInfo
-import sds.util.{MultiArgsStringBuilder => Builder}
 
 class LineNumberTable(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo {
 	private val table: Array[Array[Int]] = (0 until data.readShort()).map((index: Int) => {

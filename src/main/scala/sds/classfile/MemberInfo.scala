@@ -17,7 +17,7 @@ class MemberInfo(data: ClassfileStream, pool: Array[ConstantInfo]) extends Infor
 	private val attributes: Array[AttributeInfo] = (0 until data.readShort()).map((_: Int) => ({
 		val name: Int = data.readShort()
 		val utf8: Utf8 = pool(name - 1).asInstanceOf[Utf8]
-		AttributeInfo(utf8.getValue(), data, pool)
+		AttributeInfo(utf8.value, data, pool)
 	})).toArray
 
 	def getAccess(): String = declaration(0)
