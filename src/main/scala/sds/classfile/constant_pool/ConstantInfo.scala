@@ -4,16 +4,14 @@ import sds.classfile.ClassfileStream
 import sds.classfile.Information
 import sds.classfile.constant_pool.ConstantType._
 
-abstract class ConstantInfo(private val _tag: Int) extends Information {
+abstract class ConstantInfo(_tag: Int) extends Information {
     def tag: Int = _tag
     override def toString(): String = ConstantType.get(tag)
 }
 
 object ConstantInfo {
     def apply(data: ClassfileStream): ConstantInfo = data.readByte() match {
-        case UTF8 =>
-            val len: Int = data.readShort()
-            new Utf8Info(len, new String(data.readFully(new Array[Byte](len)), "utf-8"))
+        case UTF8    => new Utf8Info(new String(data.readFully(new Array[Byte](data.readShort())), "utf-8"))
         case INTEGER => new IntInfo(data.readInt())
         case FLOAT   => new FloatInfo(data.readFloat())
         case LONG    => new LongInfo(data.readLong())

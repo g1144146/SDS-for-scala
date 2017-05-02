@@ -4,14 +4,14 @@ import java.lang.Number
 import sds.classfile.constant_pool.ConstantType.{INTEGER, FLOAT, LONG, DOUBLE}
 
 abstract class NumberInfo(tag: Int, _number: Number) extends ConstantInfo(tag) {
-    def number: Number = _number
+    protected def number: Number = _number
 	override def toString(): String = {
 		val str: String = super.toString() + "\t"
 		tag match {
-			case INTEGER => str + number.intValue()
-			case FLOAT   => str + number.floatValue()
-			case LONG    => str + number.longValue()
-			case DOUBLE  => str + number.doubleValue()
+			case INTEGER => str + _number.intValue()
+			case FLOAT   => str + _number.floatValue()
+			case LONG    => str + _number.longValue()
+			case DOUBLE  => str + _number.doubleValue()
 		}
 	}
 }

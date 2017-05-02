@@ -1,7 +1,6 @@
 package sds.classfile.constant_pool
 
-class Utf8Info(_len: Int, _value: String) extends ConstantInfo(ConstantType.UTF8) {
-	def len: Int = _len
+class Utf8Info(_value: String) extends ConstantInfo(ConstantType.UTF8) {
 	def value: String = _value
-	override def toString(): String = super.toString() + "\t" + value
+	override def toString(): String = super.toString() + "\t" + _value
 }
