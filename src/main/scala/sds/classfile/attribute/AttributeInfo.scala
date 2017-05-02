@@ -19,7 +19,7 @@ object AttributeInfo {
 			case "Code"                                 => new Code(data, pool)
 			case "ConstantValue"                        => new ConstantValue(extract(data.readShort(), pool))
 			case "Deprecated"                           => new Deprecated()
-			case "EnclosingMethod"                      => new EnclosingMethod(data, pool)
+			case "EnclosingMethod"                      => new EnclosingMethod(data.readShort(), data.readShort(), pool)
 			case "Exceptions"                           => new Exceptions(data, pool)
 			case "InnerClasses"                         => new InnerClasses(data, pool)
 			case "LineNumberTable"                      => new LineNumberTable(data, pool)

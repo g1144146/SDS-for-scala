@@ -19,7 +19,7 @@ class Code(data: Stream, pool: Array[CInfo]) extends AttributeInfo {
 	private val attributes: Array[AttributeInfo] = (0 until data.readShort()).map((_: Int) => {
 		val name: Int = data.readShort()
 		val utf8: Utf8 = pool(name - 1).asInstanceOf[Utf8]
-		AttributeInfo(utf8.getValue(), data, pool, opcodes)
+		AttributeInfo(utf8.value, data, pool, opcodes)
 	}).toArray
 
 	def getMaxStack():  Int = maxStack

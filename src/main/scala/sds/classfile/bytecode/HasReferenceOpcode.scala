@@ -1,36 +1,28 @@
 package sds.classfile.bytecode
 
-import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 import sds.classfile.constant_pool.ConstantType.{DOUBLE, FLOAT, INTEGER, LONG, STRING, CLASS}
 import sds.util.{MultiArgsStringBuilder => Builder}
 
-class HasReferenceOpcode(data: Stream, pool: Array[CInfo], _type: String, pc: Int) extends OpcodeInfo(_type, pc) {
-	protected val index: Int = if(_type.equals("ldc")) data.readUnsignedByte() else data.readShort()
-	private val ldcType: String = if(Set("ldc", "ldc_w", "ldc2_w").contains(_type)) {
+class HasReferenceOpcode(_index: Int, pool: Array[CInfo], _type: String, pc: Int) extends OpcodeInfo(_type, pc) {
+    def index: Int = _index
+	def ldcType: String = if(Set("ldc", "ldc_w", "ldc2_w").contains(_type)) {
 		pool(index - 1).tag match {
 			case DOUBLE  => "double"
 			case FLOAT   => "float"
 			case INTEGER => "int"
 			case LONG    => "long"
 			case STRING  => "String"
-			case CLASS   => extract(index, pool)
+			case CLASS   => extract(_index, pool)
 			case _       => ""
 		}
-	} else ""
-	protected val operand: String = if(ldcType.equals("String")) "\"" + extract(getIndex(), pool) + "\""
-	                                else                         extract(getIndex(), pool)
-
-	def getIndex(): Int = index
-	def getOperand(): String = operand
-	def getLdcType(): String = _type match {
-		case "ldc"|"ldc_w"|"ldc2_w" => ldcType
-		case _ => throw new IllegalStateException("this opcode is not ldc(" + _type.toString() + ")")
-	}
+	} else throw new IllegalStateException("this opcode is not ldc(" + _type.toString() + ")")
+	def operand: String = if(ldcType.equals("String")) "\"" + extract(_index, pool) + "\""
+	                      else                         extract(_index, pool)
 
 	override def toString(): String = {
 		val b: Builder = new Builder(super.toString());
-		b.append(": #", index, "(", getOperand());
+		b.append(": #", _index, "(", operand);
 		if(ldcType.length > 0) {
 			b.append("(", ldcType, ")");
 		}

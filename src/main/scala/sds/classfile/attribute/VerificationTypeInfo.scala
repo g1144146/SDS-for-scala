@@ -2,7 +2,7 @@ package sds.classfile.attribute
 
 import sds.classfile.{ClassfileStream => Stream}
 
-sealed abstract class VerificationTypeInfo(private val _tag: Int) {
+sealed abstract class VerificationTypeInfo(_tag: Int) {
 	def tag: Int = _tag
 	override def toString(): String = getClass().getSimpleName()
 }

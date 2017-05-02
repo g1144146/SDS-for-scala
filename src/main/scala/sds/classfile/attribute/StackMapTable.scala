@@ -29,7 +29,7 @@ object StackMapFrame {
 		if((0 to 63).contains(tag))    return new SameFrame(tag)
 		if((64 to 127).contains(tag))  return new SameLocals1StackItemFrame(tag, data)
 		if(tag == 247)                 return new SameLocals1StackItemFrameExtended(tag, data)
-		if((248 to 250).contains(tag)) return new ChopFrame(tag, data)
+		if((248 to 250).contains(tag)) return new ChopFrame(tag, data.readShort())
 		if(tag == 251)                 return new SameFrameExtended(tag, data)
 		if((252 to 254).contains(tag)) return new AppendFrame(tag, data)
 		if(tag == 255)                 return new FullFrame(tag, data)
@@ -52,21 +52,19 @@ class SameLocals1StackItemFrameExtended(tag: Int, data: Stream) extends SameFram
 	def getStack():  VTI = stack
 }
 
-class ChopFrame(tag: Int, data: Stream) extends SameFrame(tag) {
-	private val offset: Int = data.readShort()
-
-	def getOffset(): Int = offset
+class ChopFrame(tag: Int, _offset: Int) extends SameFrame(tag) {
+	def offset: Int = _offset
 }
 
-class SameFrameExtended(tag: Int, data: Stream) extends ChopFrame(tag, data) {}
+class SameFrameExtended(tag: Int, data: Stream) extends ChopFrame(tag, data.readShort()) {}
 
-class AppendFrame(tag: Int, data: Stream) extends ChopFrame(tag, data) {
+class AppendFrame(tag: Int, data: Stream) extends ChopFrame(tag, data.readShort()) {
 	private val locals: Array[VTI] = (0 until (tag - 251)).map((_: Int) => VTI(data)).toArray
 
 	def getLocals(): Array[VTI] = locals
 }
 
-class FullFrame(tag: Int, data: Stream) extends ChopFrame(tag, data) {
+class FullFrame(tag: Int, data: Stream) extends ChopFrame(tag, data.readShort()) {
 	private val locals: Array[VTI] = (0 until data.readShort()).map((_: Int) => VTI(data)).toArray
 	private val stacks: Array[VTI] = (0 until data.readShort()).map((_: Int) => VTI(data)).toArray
 

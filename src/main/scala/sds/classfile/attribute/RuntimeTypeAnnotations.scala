@@ -58,66 +58,9 @@ object TargetType extends Enumeration {
 	= Value
 }
 
-abstract class TargetInfo(private val _type: TargetType.Value) {
-	def getType(): TargetType.Value = _type
-	override def toString(): String = _type.toString() + ": "
-}
-
-class TypeParamTarget(private val typeParam: Int) extends TargetInfo(TargetType.TypeParamTarget) {
-	def getTypeParam(): Int = typeParam
-	override def toString(): String = super.toString() + "index:" + typeParam
-}
-
-class SuperTypeTarget(private val superType: Int) extends TargetInfo(TargetType.SuperTypeTarget) {
-	def getSuperType(): Int = superType
-	override def toString(): String = super.toString() + "index:" + superType
-}
-
-class TypeParamBoundTarget(private val typeParam: Int, private val bounds: Int) extends
-TargetInfo(TargetType.TypeParamBoundTarget) {
-	def getTypeParam(): Int = typeParam
-	def getBounds(): Int = bounds
-	override def toString(): String = super.toString() + "bounds:" + bounds + ", type_param:" + typeParam
-}
-
-class EmptyTarget extends TargetInfo(TargetType.EmptyTarget) { /** has no members **/}
-
-class MethodFormalParamTarget(private val formal: Int) extends TargetInfo(TargetType.MethodFormalParamTarget) {
-	def getFormalParam(): Int = formal
-	override def toString(): String = super.toString() + "index:" + formal
-}
-
-class ThrowsTarget(private val throwsType: Int) extends TargetInfo(TargetType.ThrowsTarget) {
-	def getThrowsType(): Int = throwsType
-	override def toString(): String = super.toString() + "index:" + throwsType
-}
-
-class LocalVarTarget(data: Stream) extends TargetInfo(TargetType.LocalVarTarget) {
-	val table: Array[Int] = (0 until data.readShort()).map((_: Int) => data.readShort()).toArray
-	
-	def getStart(): Int = table(0)
-	def getLen():   Int = table(1)
-	def getIndex(): Int = table(2)
-	override def toString(): String = {
-		super.toString() + "index:" + table(2) + ", pc:" + table(0) + "-" + (table(0) + table(1))
-	}
-}
-
-class CatchTarget(private val exTable: Int) extends TargetInfo(TargetType.CatchTarget) {
-	def getExTable(): Int = exTable
-	override def toString(): String = super.toString() + "index:" +  exTable
-}
-
-class OffsetTarget(private val offset: Int) extends TargetInfo(TargetType.OffsetTarget) {
-	def getOffset(): Int = offset
-	override def toString(): String = super.toString() + "offset:" + offset
-}
-
-class TypeArgTarget(private val offset: Int, private val typeArg: Int) extends
-TargetInfo(TargetType.TypeArgTarget) {
-	def getOffSet():  Int = offset
-	def getTypeArg(): Int = typeArg
-	override def toString(): String = super.toString() + "index:" + typeArg + ", offset:" + offset
+abstract class TargetInfo(__type: TargetType.Value) {
+	def _type: TargetType.Value = __type
+	override def toString(): String = __type.toString() + ": "
 }
 
 object TargetInfo {
@@ -130,11 +73,66 @@ object TargetInfo {
 			case 0x13|0x14|0x15           => new EmptyTarget()
 			case 0x16                     => new MethodFormalParamTarget(data.readUnsignedByte())
 			case 0x17                     => new ThrowsTarget(data.readShort())
-			case 0x40|0x41                => new LocalVarTarget(data)
+			case 0x40|0x41                =>
+                val table: Array[Int] = (0 until data.readShort()).map((_: Int) => data.readShort()).toArray
+                new LocalVarTarget(table(0), table(1), table(2))
 			case 0x42                     => new CatchTarget(data.readShort())
 			case 0x43|0x44|0x45|0x46      => new OffsetTarget(data.readShort())
 			case 0x47|0x48|0x49|0x4A|0x4B => new TypeArgTarget(data.readShort(), data.readUnsignedByte())
 			case _ => throw new RuntimeException("unknown target type(" + targetType + ")")
 		}
 	}
+}
+
+class TypeParamTarget(_typeParam: Int) extends TargetInfo(TargetType.TypeParamTarget) {
+	def typeParam: Int = _typeParam
+	override def toString(): String = super.toString() + "index:" + _typeParam
+}
+
+class SuperTypeTarget(_superType: Int) extends TargetInfo(TargetType.SuperTypeTarget) {
+	def superType: Int = _superType
+	override def toString(): String = super.toString() + "index:" + _superType
+}
+
+class TypeParamBoundTarget(_typeParam: Int, _bounds: Int) extends TargetInfo(TargetType.TypeParamBoundTarget) {
+	def typeParam: Int = _typeParam
+	def bounds: Int = _bounds
+	override def toString(): String = super.toString() + "bounds:" + _bounds + ", type_param:" + _typeParam
+}
+
+class EmptyTarget extends TargetInfo(TargetType.EmptyTarget) { /** has no members **/}
+
+class MethodFormalParamTarget(formal: Int) extends TargetInfo(TargetType.MethodFormalParamTarget) {
+	def formalParam: Int = formal
+	override def toString(): String = super.toString() + "index:" + formal
+}
+
+class ThrowsTarget(_throwsType: Int) extends TargetInfo(TargetType.ThrowsTarget) {
+	def throwsType: Int = _throwsType
+	override def toString(): String = super.toString() + "index:" + _throwsType
+}
+
+class LocalVarTarget(_start: Int, _len: Int, _index: Int) extends TargetInfo(TargetType.LocalVarTarget) {
+	def start: Int = _start
+	def len:   Int = _len
+	def index: Int = _index
+	override def toString(): String = {
+		super.toString() + "index:" + _index + ", pc:" + _start + "-" + (_start + _len)
+	}
+}
+
+class CatchTarget(_exTable: Int) extends TargetInfo(TargetType.CatchTarget) {
+	def exTable: Int = _exTable
+	override def toString(): String = super.toString() + "index:" +  _exTable
+}
+
+class OffsetTarget(_offset: Int) extends TargetInfo(TargetType.OffsetTarget) {
+	def offset: Int = _offset
+	override def toString(): String = super.toString() + "offset:" + _offset
+}
+
+class TypeArgTarget(_offset: Int, _typeArg: Int) extends TargetInfo(TargetType.TypeArgTarget) {
+	def offSet:  Int = _offset
+	def typeArg: Int = _typeArg
+	override def toString(): String = super.toString() + "index:" + _typeArg + ", offset:" + _offset
 }

@@ -32,7 +32,7 @@ object AnnotationGenerator {
 			case 'c' => builder.append(parse(extract(element.getClassInfo(), pool)), ".class")
 			case 'e' => 
 				val enum: Enum = element.asInstanceOf[Enum]
-				builder.append(parse(extract(enum.getTypeName(), pool)), ".", extract(enum.getConstName(), pool))
+				builder.append(parse(extract(enum.typeName, pool)), ".", extract(enum.constName, pool))
 			case '@' => builder.append(generate(element.getAnnotation, pool))
 			case '[' =>
 				val arrayElement: String = element.getArray().getValues().map((ev: Element) => {

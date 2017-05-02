@@ -41,21 +41,21 @@ object StackMapFrameParser {
 					list += parseVerify(sl.getStack(), pool, opcodes)
 					map.put("stack", list)
 					map.put("local", local)
-					key = sl.getTag() - 64
+					key = sl.tag - 64
 				case sle: SameLocals1StackItemFrameExtended =>
 					list += parseVerify(sle.getStack(), pool, opcodes)
-					map.put("stack", list);
-					map.put("local", local);
-					key = sle.getOffset();
+					map.put("stack", list)
+					map.put("local", local)
+					key = sle.getOffset()
 				case sfe: SameFrameExtended =>
-					map.put("stack", list);
-					map.put("local", local);
-					key = sfe.getOffset();
+					map.put("stack", list)
+					map.put("local", local)
+					key = sfe.offset
 				case app: AppendFrame =>
 					app.getLocals().foreach(local += parseVerify(_, pool, opcodes))
-					map.put("stack", list);
-					map.put("local", local);
-					key = app.getOffset();
+					map.put("stack", list)
+					map.put("local", local)
+					key = app.offset
 				case full: FullFrame =>
 					val ffStack: Buffer[String] = full.getStacks().map((v: Verify) => {
 						parseVerify(v, pool, opcodes)
@@ -63,23 +63,23 @@ object StackMapFrameParser {
 					val ffLocal: Buffer[String] = full.getLocals().map((v: Verify) => {
 						parseVerify(v, pool, opcodes)
 					}).toBuffer.asInstanceOf[Buffer[String]]
-					map.put("stack", ffStack);
-					map.put("local", ffLocal);
-					key = full.getOffset();
+					map.put("stack", ffStack)
+					map.put("local", ffLocal)
+					key = full.offset
 				case chop: ChopFrame =>
-					val deleteArg: Int = 251 - chop.getTag();
-					val argCount:  Int = local.size;
+					val deleteArg: Int = 251 - chop.tag
+					val argCount:  Int = local.size
 					(((argCount - 1) - deleteArg) - 1 to argCount - 1 by -1).foreach(local.remove(_))
-//					for(int i = argCount-1; i > ((argCount-1) - deleteArg); i--) {
-//						local.remove(i);
+//					for(int i = argCount-1 i > ((argCount-1) - deleteArg) i--) {
+//						local.remove(i)
 //					}
-					map.put("stack", list);
-					map.put("local", local);
-					key = chop.getOffset();
+					map.put("stack", list)
+					map.put("local", local)
+					key = chop.offset
 				case s: SameFrame =>
 					map.put("stack", list)
 					map.put("local", local)
-					key = frame.getTag()
+					key = frame.tag
 			}
 			parsed.put(key, map)
 			before = key
@@ -87,13 +87,11 @@ object StackMapFrameParser {
 		parsed
 	}
 
-	private def parseVerify(info: Verify, pool: Array[CInfo], opcodes: Array[Opcode]): String = {
-		info match {
-			case ov: ObjectVar =>
-				val value: String = extract(ov.getCPool(), pool);
-				if(value.startsWith("[")) parse(value) else value;
-			case uv: UninitializedVar => get(opcodes(uv.getOffset()), pool);
-			case _                    => info.toString()
-		}
+	private def parseVerify(info: Verify, pool: Array[CInfo], opcodes: Array[Opcode]): String = info match {
+		case ov: ObjectVar =>
+			val value: String = extract(ov.cpool, pool)
+			if(value.startsWith("[")) parse(value) else value
+		case uv: UninitializedVar => get(opcodes(uv.offset), pool)
+		case _                    => info.toString()
 	}
 }
