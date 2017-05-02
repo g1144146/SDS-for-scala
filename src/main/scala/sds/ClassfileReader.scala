@@ -44,7 +44,7 @@ class ClassfileReader {
 		classfile.access = data.readShort()
 		classfile.thisClass = data.readShort()
 		classfile.superClass = data.readShort()
-		classfile.interfaces = range(data.readShort()).map((_: Int) => data.readShort()).toArray
+		classfile.interfaces = (0 until data.readShort()).map((_: Int) => data.readShort()).toArray
 
 		lazy val genAttr: ((Int) => (AttributeInfo)) = (_: Int) => {
 			val name: Int = data.readShort()
@@ -52,12 +52,10 @@ class ClassfileReader {
 			AttributeInfo(utf8.value, data, classfile.pool)
 		}
 		lazy val genMember: ((Int) => (MemberInfo)) = (_: Int) => new MemberInfo(data, classfile.pool)
-		classfile.fields     = range(data.readShort()).map(genMember).toArray
-		classfile.methods    = range(data.readShort()).map(genMember).toArray
-		classfile.attributes = range(data.readShort()).map(genAttr).toArray
+		classfile.fields     = (0 until data.readShort()).map(genMember).toArray
+		classfile.methods    = (0 until data.readShort()).map(genMember).toArray
+		classfile.attributes = (0 until data.readShort()).map(genAttr).toArray
 	}
-
-	private def range(end: Int): Range = (0 until end)
 
 	private def readConstantPool(i: Int, pool: Array[CInfo]): Array[CInfo] = {
 		if(i >= pool.length) {
