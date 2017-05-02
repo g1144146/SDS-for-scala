@@ -6,9 +6,9 @@ import sds.util.DescriptorParser.parse
 
 class MultiANewArray(data: S, pool: Array[C], pc: Int)
 extends HasReferenceOpcode(data.readShort(), pool, "multianewarray", pc) {
-	private val dimensions: Int = data.readByte()
+    private val dimensions: Int = data.readByte()
 
-	def getDimensions(): Int = dimensions
-	def getOperand(): String = parse(operand, false)
-	override def toString(): String = super.toString() + ", " + dimensions
+    def getDimensions(): Int = dimensions
+    def getOperand(): String = parse(operand, false)
+    override def toString(): String = super.toString() + ", " + dimensions
 }
