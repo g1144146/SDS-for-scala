@@ -26,7 +26,7 @@ class ClassfilePrinter(private val cf: Classfile) {
 
     def _print(): Unit = {
         println("<<< Magic Number >>>")
-        println("  " + Integer.toHexString(cf.magic));
+        println("  " + Integer.toHexString(cf.magic))
         println("<<< Major Version >>>")
         println("  " + cf.major)
         println("<<< Minor Version >>>")
@@ -41,7 +41,7 @@ class ClassfilePrinter(private val cf: Classfile) {
 
     private def printPool(): Unit = {
         println("<<< Constant Pool >>>")
-        (0 until pool.length).foreach((i) => println("  [" + (i + 1) + "]: " + pool(i).toString()))
+        pool.indices.foreach((i) => println("  [" + (i + 1) + "]: " + pool(i).toString()))
     }
 
     private def printClass(): Unit = {
@@ -59,7 +59,7 @@ class ClassfilePrinter(private val cf: Classfile) {
     private def printField(): Unit = {
         println("    <<< Field >>>")
         val fields: Array[Member] = cf.fields
-        (0 until fields.length).foreach((i) => {
+        fields.indices.foreach((i) => {
                 println("      [" + (i + 1) + "]: " + fields(i).toString())
                 printAttribute("          ", fields(i).getAttributes(), "field")
         })
@@ -68,7 +68,7 @@ class ClassfilePrinter(private val cf: Classfile) {
     private def printMethod(): Unit = {
         println("    <<< Method >>>")
         val methods: Array[Member] = cf.methods
-        (0 until methods.length).foreach((i) => {
+        methods.indices.foreach((i) => {
             println("      [" + (i + 1) + "]: " + methods(i).toString())
             printAttribute("          ", methods(i).getAttributes(), "method")
         })
@@ -77,12 +77,12 @@ class ClassfilePrinter(private val cf: Classfile) {
     private def printAttribute(indent: String, attr: Array[AttributeInfo], _type: String): Unit = {
         if(attr.length == 0) return
         println(indent + "<<< Attribute in " + _type + " >>>")
-        (0 until attr.length).foreach((i) => {
+        attr.indices.foreach((i) => {
             attr(i) match {
                 case boot: BootstrapMethods =>
                     println(indent + "  [" + (i + 1) + " in " + _type + "]: BootstrapMethods")
                     val bsm: Array[(String, Array[String])] = boot.getBSM()
-                    (0 until bsm.length).foreach((i: Int) => {
+                    bsm.indices.foreach((i: Int) => {
                         val t: (String, Array[String]) = bsm(i)
                         println(indent + "    (" + i + "): ")
                         println(indent + "        bsm_ref : " + t._1)
@@ -91,11 +91,11 @@ class ClassfilePrinter(private val cf: Classfile) {
                 case code: Code =>
                     println(indent + "  max_stack: " + code.getMaxStack() + ", max_locals: " + code.getMaxLocals())
                     val opcodes: Array[Opcode] = code.getOpcodes()
-                    (0 until opcodes.length).foreach((i: Int) => println(indent + "    " + opcodes(i)))
+                    opcodes.indices.foreach((i: Int) => println(indent + "    " + opcodes(i)))
                     val table: Array[(Array[Int], String)] = code.getExTable()
                     if(table.length > 0) {
                         println(indent + "  Exception Table:")
-                        (0 until table.length).foreach((i: Int) => {
+                        table.indices.foreach((i: Int) => {
                             val t: Array[Int] = table(i)._1
                             val target:  String = table(i)._2
                             println(indent + "    [" + i + "]: " + t(0) + "-" + t(1) + ", " + t(2) + ": " + target)
@@ -105,7 +105,7 @@ class ClassfilePrinter(private val cf: Classfile) {
                 case ic: InnerClasses =>
                     println(indent + "  [" + (i + 1) + " in " + _type + "]: InnerClasses")
                     val inner: Array[Array[String]] = ic.getClasses()
-                    (0 until inner.length).foreach((i: Int) => {
+                    inner.indices.foreach((i: Int) => {
                         val first:  String = indent + "    (" + (i + 1) + "): "
                         val second: String = inner(i)(3) + inner(i)(0) + " " + inner(i)(2)
                         val third:  String = if(inner(i)(1).length > 0)" {in " + inner(i)(1) + "}" else ""
@@ -114,12 +114,12 @@ class ClassfilePrinter(private val cf: Classfile) {
                 case line: LineNumberTable =>
                     println(indent + "  [" + (i + 1) + " in " + _type + "]: LineNumberTable")
                     val lines: Array[String] = line.getTableStr()
-                    (0 until lines.length).foreach((i: Int) => println(indent + "    [" + i + "]: " + lines(i)))
+                    lines.indices.foreach((i: Int) => println(indent + "    [" + i + "]: " + lines(i)))
                 case local: LocalVariable =>
                     println(indent + "  [" + (i + 1) + " in " + _type + "]: LocalVariable")
                     val name:  Array[Array[String]] = local.getNameTable()
                     val table: Array[Array[Int]]    = local.getTable()
-                    (0 until name.length).foreach((i: Int) => {
+                    name.indices.foreach((i: Int) => {
                         val first: String  = indent + "    [" + i + "]: "
                         val second: String = name(i)(1) + " " + name(i)(0)
                         val third: String  = " {" + table(i)(0) + "-" + table(i)(1) + "}"
@@ -152,5 +152,5 @@ class ClassfilePrinter(private val cf: Classfile) {
         throw new RuntimeException("unknown tag(" + tag + ")")
     }
 
-    private def check(index: Int): Boolean = (0 until pool.length).contains(index)
+    private def check(index: Int): Boolean = pool.indices.contains(index)
 }

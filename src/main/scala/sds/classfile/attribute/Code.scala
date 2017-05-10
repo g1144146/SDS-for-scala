@@ -40,7 +40,7 @@ class Code(data: Stream, pool: Array[CInfo]) extends AttributeInfo {
         if(index >= (len + pointer)) {
             return buffer.toArray
         }
-        val pc: Int = (index - pointer)
+        val pc: Int = index - pointer
         val info: Opcode = Opcode(pc, data, pool)
         readOpcode(len, pointer, data, pool, buffer += info)
     }

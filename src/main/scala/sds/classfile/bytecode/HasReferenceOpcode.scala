@@ -16,15 +16,15 @@ class HasReferenceOpcode(_index: Int, pool: Array[CInfo], _type: String, pc: Int
             case CLASS   => extract(_index, pool)
             case _       => ""
         }
-    } else throw new IllegalStateException("this opcode is not ldc(" + _type.toString() + ")")
+    } else ""
     def operand: String = if(ldcType.equals("String")) "\"" + extract(_index, pool) + "\""
                           else                         extract(_index, pool)
 
     override def toString(): String = {
-        val b: Builder = new Builder(super.toString());
-        b.append(": #", _index, "(", operand);
+        val b: Builder = new Builder(super.toString())
+        b.append(": #", _index, "(", operand)
         if(ldcType.length > 0) {
-            b.append("(", ldcType, ")");
+            b.append("(", ldcType, ")")
         }
         b.append(")")
         b.toString()

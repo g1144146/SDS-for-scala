@@ -54,5 +54,5 @@ class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswit
     }
 
     override def toString(): String = super.toString() +
-        (0 until _match.length).map((_: Int) => (_match(_), offset(_))).toArray.mkString("[", "_", "]")
+        _match.indices.map((_: Int) => (_match(_), offset(_))).toArray.mkString("[", "_", "]")
 }

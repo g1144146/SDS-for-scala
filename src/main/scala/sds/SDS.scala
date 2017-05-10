@@ -8,7 +8,7 @@ import sds.util.{ClassfilePrinter => Printer}
 class SDS(args: Array[String]) {
     var jar: JarFile = null;
     val classfiles: ArrayBuffer[String] = ArrayBuffer();
-    args.foreach(parseArgs(_))
+    args.foreach(parseArgs)
 
     private def parseArgs(arg: String): Unit = {
         if(arg.endsWith(".class")) {
