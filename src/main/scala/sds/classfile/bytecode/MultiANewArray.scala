@@ -9,6 +9,6 @@ extends HasReferenceOpcode(data.readShort(), pool, "multianewarray", pc) {
     private val dimensions: Int = data.readByte()
 
     def getDimensions(): Int = dimensions
-    def getOperand(): String = parse(operand, false)
-    override def toString(): String = super.toString() + ", " + dimensions
+    override def operand(): String = parse(super.operand)
+    override def toString(): String = super.toString() + ", " + getDimensions()
 }

@@ -10,5 +10,5 @@ class AnnotationDefault(data: Stream, pool: Array[CInfo]) extends AttributeInfo 
     private val default: String = generateFromElementValue(new ElementValue(data), pool, new Builder())
 
     def getDefault(): String = default
-    override def toString(): String = super.toString() + ": " + default
+    override def toString(): String = super.toString() + ": " + getDefault()
 }

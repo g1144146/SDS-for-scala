@@ -9,5 +9,5 @@ extends HasReferenceOpcode(data.readShort(), p, "invokeinterface", pc) {
     data.skipBytes(1)
 
     def getCount(): Int = count
-    override def toString(): String = super.toString() + ", " + count
+    override def toString(): String = super.toString() + ", " + getCount()
 }

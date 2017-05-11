@@ -19,7 +19,7 @@ class BootstrapMethods(data: ClassfileStream, pool: Array[ConstantInfo]) extends
     override def toString(): String = {
         val b: Builder = new Builder(super.toString())
         b.append(": ")
-        bsm.foreach((t: (String, Array[String])) => {
+        getBSM().foreach((t: (String, Array[String])) => {
             b.append("(bsmRef: ", t._1, " | args: ", t._2.mkString(","), ")_")
         })
         b.toString()

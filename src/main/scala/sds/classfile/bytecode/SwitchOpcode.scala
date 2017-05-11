@@ -11,7 +11,7 @@ sealed abstract class SwitchOpcode(data: Stream, _type: String, pc: Int) extends
     def getDefault(): Int = default
     def getOffset(): Array[Int] = offset
 
-    def init(): Unit = {
+    private def init(): Unit = {
         skip(1, data)
         this.default = data.readInt() + pc
         if(_type.equals(Table.OPCODES(0xaa))) {
@@ -34,7 +34,7 @@ sealed abstract class SwitchOpcode(data: Stream, _type: String, pc: Int) extends
 }
 
 class TableSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "tableswitch", pc) {
-    override def toString(): String = super.toString() + offset.mkString("[", ",", "]")
+    override def toString(): String = super.toString() + getOffset().mkString("[", ",", "]")
 }
 
 class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswitch", pc) {
@@ -43,7 +43,7 @@ class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswit
 
     def getMatch():  Array[Int] = _match
     
-    def initOffset(): Unit = {
+    private def initOffset(): Unit = {
         val size: Int = data.readInt()
         this._match = new Array(size)
         this.offset = new Array(size)
@@ -54,5 +54,5 @@ class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswit
     }
 
     override def toString(): String = super.toString() +
-        _match.indices.map((_: Int) => (_match(_), offset(_))).toArray.mkString("[", "_", "]")
+        getMatch().indices.map((_: Int) => (_match(_), getOffset()(_))).toArray.mkString("[", "_", "]")
 }

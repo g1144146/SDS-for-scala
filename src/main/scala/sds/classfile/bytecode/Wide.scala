@@ -13,11 +13,9 @@ class Wide(data: Stream, pool: Array[ConstantInfo], pc: Int) extends OpcodeInfo(
     // in case of iinc, readShort().
     private val const: Int = if(tag == 0x84) data.readShort() else -1
 
-    def getConst(): Int =
-        if(_type.equals("iinc")) const
-        else throw new IllegalStateException("this method must not call because of opcode is not iinc.")
-    def index:   Int    = ref.index
-    def operand: String = ref.operand
-    def ldcType: String = ref.ldcType
+    def getConst(): Int    = if(_type.equals("iinc")) const else -1
+    def index:      Int    = ref.index
+    def operand:    String = ref.operand
+    def ldcType:    String = ref.ldcType
     override def toString(): String = super.toString() + ref.toString() + ", " + const
 }

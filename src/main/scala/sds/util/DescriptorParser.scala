@@ -32,13 +32,14 @@ object DescriptorParser {
             val matched: String = m.matched
             val len: Int  = matched.length
             if(matched.startsWith("[")) {
-                val last: Int = matched.lastIndexOf("[")
+                val last: Int = matched.lastIndexOf("[") + 1
                 var _type: String = ""
                 if(matched.matches(prmPattern)) {
-                    _type += parsePrim(matched.substring(len - 1))
-                    _type = _type.substring(_type.length - 1)
+                    _type = parsePrim(matched.substring(len - 1))
+                    _type = _type.substring(0, _type.length - 1)
                 } else {
-                    _type += matched.substring(last + 2, len)
+                    _type = matched.substring(last + 1, len)
+                    _type = removeLangPrefix(_type)
                 }
                 _type += (0 until last).map((_: Int) => "[]").toArray.mkString
                 _type
