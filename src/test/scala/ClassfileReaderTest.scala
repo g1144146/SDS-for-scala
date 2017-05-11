@@ -45,7 +45,7 @@ class ClassfileReaderTest extends Assertions {
         assert(extract(cf_1.thisClass, pool) === "Hello")
         assert(extract(cf_1.superClass, pool) === "Object")
         assert(pool(0).tag === METHOD)
-        assert(pool(0).toString() === "Method_ref\t#6.#17")
+        assert(pool(0).toString() === "Methodref\t#6.#17")
         assert(pool(2).toString() === "String\t#20")
         assert(pool(4).toString() === "Class\t#23")
         assert(pool(6).toString() === "Utf8\t<init>")
@@ -80,7 +80,7 @@ class ClassfileReaderTest extends Assertions {
         val code2: Code = main.getAttributes()(0).asInstanceOf[Code]
         val ops2: Array[OpcodeInfo] = code2.getOpcodes()
         val ldc: Has = ops2(1).asInstanceOf[Has]
-        assert(ldc.toString() === "3 - ldc: #3(\"20\"(String))")
+        assert(ldc.toString() === "3 - ldc: #3(\"Hello World!!\"(String))")
         val ex: Exceptions = main.getAttributes()(1).asInstanceOf[Exceptions]
         assert(ex.getEx() === Array("Exception"))
         assert(ex.toString() === "Exceptions: [Exception]")

@@ -20,7 +20,7 @@ object Utf8ValueExtractor {
         case float:  FloatInfo  => float.float.toString()
         case long:   LongInfo   => long.long.toString()
         case double: DoubleInfo => double.double.toString()
-        case str:    StringInfo => str.string.toString()
+        case str:    StringInfo => extract(pool(str.string - 1), pool)
         case c: Class  => removeLangPrefix(extract(pool(c.index - 1), pool).replace("/", "."))
         case m: Member =>
             extract(pool(m.classIndex - 1), pool) + "." + extract(pool(m.nameAndType - 1), pool)

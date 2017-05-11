@@ -15,5 +15,5 @@ class HandleInfo(_refKind: Int, _refIndex: Int) extends ConstantInfo(ConstantTyp
         case 9 => "REF_invokeInterface"
         case _ => throw new IllegalStateException("reference kind index is invalid value(" + _refKind + ")")
     }
-    override def toString(): String = super.toString + "\t" + kindValue + ":#" + _refIndex
+    override def toString(): String = super.toString + "\t" + kindValue + ":#" + index
 }
