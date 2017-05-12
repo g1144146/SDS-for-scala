@@ -1,7 +1,9 @@
 package sds
 
+import java.io.InputStream
+import java.net.URL
+import java.nio.file.Paths
 import sds.classfile.MemberInfo
-import sds.classfile.attribute.AttributeInfo
 import sds.classfile.attribute.Code
 import sds.classfile.attribute.LineNumberTable
 import sds.classfile.attribute.Exceptions
@@ -18,14 +20,18 @@ import org.scalatest.Assertions
 
 class ClassfileReaderTest extends Assertions {
     var cf_1: Classfile = null
+    var cf_2: Classfile = null
 
     @Before
     def setUp(): Unit = {
-        val path: String = genPath("build", "resources", "test", "resources", "Hello.class")
-        val read: ClassfileReader = new ClassfileReader(path)
+        val url: URL = getClass().getClassLoader.getResource("Hello.class")
+        val read: ClassfileReader = new ClassfileReader(Paths.get(url.toURI()).toString())
         read.read()
         this.cf_1 = read.classfile
-//        new sds.util.ClassfilePrinter(cf_1)._print()
+//        val stream: InputStream = getClass().getClassLoader().getResourceAsStream("Hello.class")
+//        val read2: ClassfileReader = new ClassfileReader(stream)
+//        read2.read()
+//        this.cf_2 = read2.classfile
     }
 
     def genPath(paths: String*): String = {
@@ -50,6 +56,12 @@ class ClassfileReaderTest extends Assertions {
         assert(pool(4).toString() === "Class\t#23")
         assert(pool(6).toString() === "Utf8\t<init>")
         assert(pool(16).toString() === "NameAndType\t#7:#8")
+    }
+
+    @Test
+    def fieldTest(): Unit = {
+//        val fields: Array[MemberInfo] = cf_2.fields
+
     }
 
     @Test

@@ -20,12 +20,12 @@ class ElementValue(data: ClassfileStream) {
     init()
 
     private def init(): Unit = tag match {
-        case 'B'|'C'|'D'|'F'|'I'|'J'|'S'|'Z' => this.constVal = data.readShort()
+        case 'B'|'C'|'D'|'F'|'I'|'J'|'S'|'Z'|'s' => this.constVal = data.readShort()
         case 'c' => this.classInfo  = data.readShort()
         case 'e' => this.enumConst  = new EnumConstValue(data.readShort(), data.readShort())
         case '@' => this.annotation = new Annotation(data)
         case '[' => this.array      = new ArrayValue(data)
-        case _   => throw new RuntimeException("unknow tag(" + tag + ").")
+        case _   => throw new RuntimeException("unknown tag(" + tag + ").")
     }
 
     def getTag(): Char = tag
