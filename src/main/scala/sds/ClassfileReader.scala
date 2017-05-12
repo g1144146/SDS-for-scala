@@ -55,6 +55,7 @@ class ClassfileReader {
         classfile.fields     = (0 until data.readShort()).map(genMember).toArray
         classfile.methods    = (0 until data.readShort()).map(genMember).toArray
         classfile.attributes = (0 until data.readShort()).map(genAttr).toArray
+        data.close()
     }
 
     private def readConstantPool(i: Int, pool: Array[CInfo]): Array[CInfo] = {

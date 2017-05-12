@@ -19,7 +19,7 @@ object Operand {
         case look:   LookupSwitch       => 
             val _match: Array[Int] = look.getMatch()
             val offset: Array[Int] = look.getOffset()
-            "[" + (0 until _match.length).map((i: Int) => _match(i) + ":" + offset(i))
+            "[" + _match.indices.map((i: Int) => _match(i) + ":" + offset(i))
                   .reduce((x, y) => x + "," + y) + "], " + look.getDefault
         case _ => ""
     }

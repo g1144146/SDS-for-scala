@@ -1,4 +1,4 @@
-package sds.constant_pool
+package sds.classfile.constant_pool
 
 import org.junit.Test
 import org.scalatest.Assertions
