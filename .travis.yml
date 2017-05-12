@@ -5,5 +5,4 @@ jdk:
 scala:
   - 2.12.1
 script:
-  - ./gradlew assemble
-  - ./gradlew check --info
+  - ./gradlew clean build
