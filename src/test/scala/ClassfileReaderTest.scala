@@ -24,8 +24,10 @@ class ClassfileReaderTest extends Assertions {
 
     @Before
     def setUp(): Unit = {
-        val url: URL = getClass().getClassLoader.getResource("Hello.class")
-        val read: ClassfileReader = new ClassfileReader(Paths.get(url.toURI()).toString())
+//        val url: URL = getClass().getClassLoader().getResource("Hello.class")
+//        val read: ClassfileReader = new ClassfileReader(Paths.get(url.toURI()).toString())
+        val stream: InputStream = getClass().getClassLoader().getResourceAsStream("Hello.class")
+        val read: ClassfileReader = new ClassfileReader(stream)
         read.read()
         this.cf_1 = read.classfile
 //        val stream: InputStream = getClass().getClassLoader().getResourceAsStream("Hello.class")
