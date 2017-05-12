@@ -25,6 +25,15 @@ dependencies {
     testRuntime 'org.scala-lang.modules:scala-xml_2.12:+'
 }
 
+sourceSets {
+    main {
+        scala.srcDir 'src/main/scala'
+    }
+    test {
+        scala.srcDir 'src/test/scala'
+    }
+}
+
 jar {
     manifest {
         attributes('Main-Class' : mainClassName)

@@ -4,6 +4,6 @@ jdk:
   - oraclejdk8
 scala:
   - 2.12.1
-script:
-  - gradle check --info
-  - gradle clean build
+# script:
+#   - gradle check --info
+#   - gradle clean build
