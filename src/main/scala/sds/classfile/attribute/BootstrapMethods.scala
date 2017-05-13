@@ -2,7 +2,6 @@ package sds.classfile.attribute
 
 import sds.classfile.ClassfileStream
 import sds.classfile.constant_pool.ConstantInfo
-import sds.util.{MultiArgsStringBuilder => Builder}
 
 class BootstrapMethods(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo {
     /**
@@ -15,13 +14,4 @@ class BootstrapMethods(data: ClassfileStream, pool: Array[ConstantInfo]) extends
     }).toArray
 
     def getBSM(): Array[(String, Array[String])] = bsm
-
-    override def toString(): String = {
-        val b: Builder = new Builder(super.toString())
-        b.append(": ")
-        getBSM().foreach((t: (String, Array[String])) => {
-            b.append("(bsmRef: ", t._1, " | args: ", t._2.mkString(","), ")_")
-        })
-        b.toString()
-    }
 }

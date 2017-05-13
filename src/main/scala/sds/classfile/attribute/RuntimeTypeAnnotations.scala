@@ -14,7 +14,7 @@ class RuntimeTypeAnnotations(data: Stream, _name: String) extends AttributeInfo 
     }).toArray
 
     def getAnnotations(): Array[TypeAnnotation] = annotations
-    def name(): String = _name
+    def name: String = _name
 }
 
 class TypeAnnotation(_target: TargetInfo, _path: Array[(Int, Int)], data: Stream) extends Annotation(data) {

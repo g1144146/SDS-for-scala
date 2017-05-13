@@ -5,6 +5,7 @@ import java.net.URL
 import java.nio.file.Paths
 import sds.classfile.MemberInfo
 import sds.classfile.attribute.{
+  AnnotationDefault,
   BootstrapMethods,
   Code,
   Exceptions,
@@ -28,17 +29,20 @@ import sds.classfile.constant_pool.{InvokeDynamicInfo => Invoke}
 import sds.classfile.constant_pool.ConstantType._
 import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.AccessFlag.get
+import sds.util.ClassfilePrinter
 import org.junit.Test
 import org.scalatest.Assertions
 
 class ClassfileReaderTest extends Assertions {
     private val cf_1: Classfile = setUp("Hello.class")
     private val cf_2: Classfile = setUpStream("AnnotatedTest.class")
+    private val cf_3: Classfile = setUp("RuntimeAnnotation.class")
 
     private def setUp(file: String): Classfile = {
         val url: URL = getLoader.getResource(file)
         val read: ClassfileReader = new ClassfileReader(Paths.get(url.toURI()).toString())
         read.read()
+        new ClassfilePrinter(read.classfile)._print()
         read.classfile
     }
 
@@ -46,6 +50,7 @@ class ClassfileReaderTest extends Assertions {
         val stream: InputStream = getLoader.getResourceAsStream(file)
         val read: ClassfileReader = new ClassfileReader(stream)
         read.read()
+        new ClassfilePrinter(read.classfile)._print()
         read.classfile
     }
 
@@ -140,6 +145,7 @@ class ClassfileReaderTest extends Assertions {
         val indy: InvokeDynamic = consCode.getOpcodes()(1).asInstanceOf[InvokeDynamic]
         assert(indy.toString() === "1 - invokedynamic: #2(accept|(sds.AnnotatedTest)java.util.function.Consumer)")
         val rta2: RunTypeAnn = consCode.getAttributes()(3).asInstanceOf[RunTypeAnn]
+        assert(rta2.name === "RuntimeVisibleTypeAnnotations")
         assert(rta2.getAnnotations()(0).target.toString() === "LocalVarTarget: [start, len, index] = {[7,1,2]}")
         assert(cons.getAttributes()(2).toString() === "Deprecated")
         assert(cons.getAttributes()(3).toString() === "Signature: <T extends Object>(int)void")
@@ -150,6 +156,24 @@ class ClassfileReaderTest extends Assertions {
         assert(rta3(3).target.toString() === "MethodFormalParamTarget: (formal_index: 0)")
         val rpa: RunParamAnn = cons.getAttributes()(6).asInstanceOf[RunParamAnn]
         assert(rpa.getAnnotations()(0)(0) === "@sds.RuntimeAnnotation(value = \"method_arg\")")
+
+
+        val methods3: Array[MemberInfo] = cf_3.methods
+        val ad1: AnnotationDefault = methods3(0).getAttributes()(0).asInstanceOf[AnnotationDefault]
+        val ad2: AnnotationDefault = methods3(1).getAttributes()(0).asInstanceOf[AnnotationDefault]
+        val ad3: AnnotationDefault = methods3(2).getAttributes()(0).asInstanceOf[AnnotationDefault]
+        val ad4: AnnotationDefault = methods3(3).getAttributes()(0).asInstanceOf[AnnotationDefault]
+        val ad5: AnnotationDefault = methods3(4).getAttributes()(0).asInstanceOf[AnnotationDefault]
+        val ad6: AnnotationDefault = methods3(5).getAttributes()(0).asInstanceOf[AnnotationDefault]
+        val ad7: AnnotationDefault = methods3(6).getAttributes()(0).asInstanceOf[AnnotationDefault]
+        val annotation: String = "@java.lang.annotation.Target(value = {java.lang.annotation.ElementType.TYPE})"
+        assert(ad1.toString() === "AnnotationDefault: \"placement\"")
+        assert(ad2.toString() === "AnnotationDefault: '97'")
+        assert(ad3.toString() === "AnnotationDefault: for_test.RuntimeAnnotation$Type.Default")
+        assert(ad4.toString() === "AnnotationDefault: " + annotation)
+        assert(ad5.toString() === "AnnotationDefault: 100")
+        assert(ad6.toString() === "AnnotationDefault: {1,2,3}")
+        assert(ad7.toString() === "AnnotationDefault: int.class")
     }
 
     @Test

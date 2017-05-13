@@ -27,11 +27,11 @@ object AnnotationGenerator {
     def generateFromElementValue(element: Element, pool: Array[CInfo], builder: Builder): String = {
         element.getTag() match {
             case 'B'|'D'|'F'|'I'|'J'|'S'|'Z' => builder.append(extract(element.getConstVal(), pool))
-            case 'C' => builder.append("'",  extract(element.getConstVal(), pool), "'")
+            case 'C' => builder.append("'",  extract(element.getConstVal().asInstanceOf[Char], pool), "'")
             case 's' => builder.append("\"", extract(element.getConstVal(), pool), "\"")
             case 'c' => builder.append(parse(extract(element.getClassInfo(), pool)), ".class")
             case 'e' => 
-                val enum: Enum = element.asInstanceOf[Enum]
+                val enum: Enum = element.getEnumConst()
                 builder.append(parse(extract(enum.typeName, pool)), ".", extract(enum.constName, pool))
             case '@' => builder.append(generate(element.getAnnotation, pool))
             case '[' =>
