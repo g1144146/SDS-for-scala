@@ -1,24 +1,36 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.scoverage:gradle-scoverage:+'
-    }
+plugins {
+    id 'scala'
+    id 'application'
+    // id 'org.scoverage' version '+'
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
 }
 
-apply plugin: 'scala'
-apply plugin: 'application'
-apply plugin: 'org.scoverage'
+mainClassName = 'sds.Main'
+
+// buildscript {
+//     repositories {
+//         mavenCentral()
+//     }
+//     dependencies {
+//         classpath 'org.scoverage:gradle-scoverage:+'
+//         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:+'
+//     }
+// }
 
 repositories {
     mavenCentral()
 }
 
-mainClassName = 'sds.Main'
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
 
 dependencies {
-    scoverage "org.scoverage:scalac-scoverage-plugin_2.12:+", "org.scoverage:scalac-scoverage-runtime_2.12:+"
+    // scoverage "org.scoverage:scalac-scoverage-plugin_2.12:+", "org.scoverage:scalac-scoverage-runtime_2.12:+"
     compile 'org.scala-lang:scala-library:2.12.1'
     testCompile 'junit:junit:+'
     testCompile 'org.scalatest:scalatest_2.12:+'
@@ -31,6 +43,7 @@ sourceSets {
     }
     test {
         scala.srcDir 'src/test/scala'
+        resources.srcDir 'src/test/resources'
     }
 }
 

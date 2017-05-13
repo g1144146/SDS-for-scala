@@ -4,5 +4,5 @@ jdk:
   - oraclejdk8
 scala:
   - 2.12.1
-script:
-  - ./gradlew clean build
+after_success:
+  - ./gradlew jacocoTestReport coveralls
