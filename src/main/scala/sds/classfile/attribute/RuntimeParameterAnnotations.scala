@@ -9,7 +9,5 @@ class RuntimeParameterAnnotations(data: Stream, pool: Array[CInfo], private val 
         (0 until data.readShort()).map((y: Int) => generate(data, pool)).toArray
     }).toArray
 
-    def getAnnotatinos(): Array[Array[String]] = annotations
-    override def toString(): String = name + ": [" + 
-        annotations.map(_.mkString("{", ",", "}")).toArray.mkString("_") + "]"
+    def getAnnotations(): Array[Array[String]] = annotations
 }

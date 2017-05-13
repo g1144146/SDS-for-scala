@@ -18,5 +18,5 @@ class InnerClasses(data: ClassfileStream, pool: Array[ConstantInfo]) extends Att
     }).toArray
 
     def getClasses(): Array[Array[String]] = classes
-    def check(index: Int, size: Int): Boolean = (0 until size).contains(index - 1)
+    private def check(index: Int, size: Int): Boolean = (0 until size).contains(index - 1)
 }

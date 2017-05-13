@@ -6,7 +6,7 @@ import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.DescriptorParser.parse
 
-abstract class AttributeInfo() extends Information {
+abstract class AttributeInfo extends Information {
     override def toString(): String = getClass().getSimpleName()
 }
 
@@ -31,7 +31,7 @@ object AttributeInfo {
             case "RuntimeInvisibleParameterAnnotations"
               |  "RuntimeVisibleParameterAnnotations"   => new RuntimeParameterAnnotations(data, pool, name)
             case "RuntimeInvisibleTypeAnnotations"
-              |  "RuntimeVisibleTypeAnnotations"        => new RuntimeTypeAnnotations(data, pool, name)
+              |  "RuntimeVisibleTypeAnnotations"        => new RuntimeTypeAnnotations(data, name)
             case "Signature"                            => new Signature(parse(extract(data.readShort(), pool), true))
             case "SourceDebugExtension"                 => new SourceDebugExtension(data, len)
             case "SourceFile"                           => new SourceFile(extract(data.readShort(), pool))

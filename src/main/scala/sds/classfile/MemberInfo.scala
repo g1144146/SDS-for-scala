@@ -14,11 +14,11 @@ class MemberInfo(data: ClassfileStream, pool: Array[ConstantInfo]) extends Infor
         val desc: String = parse(extract(descIndex, pool))
         Array(get(accIndex, if(desc.contains("(")) "method" else "field"), name, desc)
     })()
-    private val attributes: Array[AttributeInfo] = (0 until data.readShort()).map((_: Int) => ({
+    private val attributes: Array[AttributeInfo] = (0 until data.readShort()).map((_: Int) => {
         val name: Int = data.readShort()
         val utf8: Utf8 = pool(name - 1).asInstanceOf[Utf8]
         AttributeInfo(utf8.value, data, pool)
-    })).toArray
+    }).toArray
 
     def getAccess(): String = declaration(0)
     def getName():   String = declaration(1)
@@ -26,11 +26,7 @@ class MemberInfo(data: ClassfileStream, pool: Array[ConstantInfo]) extends Infor
     def getType():   String = if(declaration(2).contains("(")) "method" else "field"
     def getAttributes(): Array[AttributeInfo] = attributes
 
-    override def toString(): String = {
-        if(getType().equals("field")) {
-            declaration(2) + declaration(1) + " " +  declaration(0)
-        } else {
-            declaration(0) + declaration(1) + declaration(2)
-        }
-    }
+    override def toString(): String =
+        if(getType().equals("field")) declaration(0) + declaration(2) + " " +  declaration(1)
+        else                          declaration(0) + declaration(1) + declaration(2)
 }

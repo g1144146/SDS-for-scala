@@ -1,27 +1,25 @@
 package sds.util
 
 import collection.mutable.{
+  ArrayBuffer   => Buffer,
   HashMap       => Hash,
-  LinkedHashMap => Linked,
-  ArrayBuffer   => Buffer
+  LinkedHashMap => Linked
 }
 import sds.Classfile
 import sds.classfile.{MemberInfo => Member}
 import sds.classfile.attribute.{
-  AttributeInfo,
-  BootstrapMethods,
-  Code,
-  InnerClasses,
-  LineNumberTable,
-  LocalVariable,
-  StackMapTable
+  AttributeInfo, BootstrapMethods, Code, InnerClasses,
+  LineNumberTable, LocalVariable, RuntimeAnnotations,
+  RuntimeParameterAnnotations, RuntimeTypeAnnotations,
+  TypeAnnotation, StackMapTable
 }
+import sds.classfile.attribute.AnnotationGenerator.generate
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.ConstantInfo
 import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.AccessFlag.get
 
-class ClassfilePrinter(private val cf: Classfile) {
+class ClassfilePrinter(cf: Classfile) {
     private val pool: Array[ConstantInfo] = cf.pool
 
     def _print(): Unit = {
@@ -89,6 +87,7 @@ class ClassfilePrinter(private val cf: Classfile) {
                         println(indent + "        bsm_args: " + t._2.mkString(", "))
                     })
                 case code: Code =>
+                    println(indent + "  [" + (i + 1) + " in " + _type + "]: Code")
                     println(indent + "  max_stack: " + code.getMaxStack() + ", max_locals: " + code.getMaxLocals())
                     val opcodes: Array[Opcode] = code.getOpcodes()
                     opcodes.indices.foreach((i: Int) => println(indent + "    " + opcodes(i)))
@@ -101,7 +100,7 @@ class ClassfilePrinter(private val cf: Classfile) {
                             println(indent + "    [" + i + "]: " + t(0) + "-" + t(1) + ", " + t(2) + ": " + target)
                         })
                     }
-                    printAttribute(indent + "  ", code.getAttributes(), "Code")
+                    printAttribute(indent + "    ", code.getAttributes(), "Code")
                 case ic: InnerClasses =>
                     println(indent + "  [" + (i + 1) + " in " + _type + "]: InnerClasses")
                     val inner: Array[Array[String]] = ic.getClasses()
@@ -124,6 +123,18 @@ class ClassfilePrinter(private val cf: Classfile) {
                         val second: String = name(i)(1) + " " + name(i)(0)
                         val third: String  = " {" + table(i)(0) + "-" + table(i)(1) + "}"
                         println(first + second + third)
+                    })
+                case ra: RuntimeAnnotations =>
+                    println(indent + "  [" + (i + 1) + " in " + _type + "]: RuntimeAnnotation")
+                    ra.getAnnotations().foreach((a: String) => println(indent + "    " + a))
+                case rpa: RuntimeParameterAnnotations =>
+                    println(indent + "  [" + (i + 1) + " in " + _type + "]: RuntimeParameterAnnotation")
+                    rpa.getAnnotations().foreach((a: Array[String]) => println(indent + "    " + a.mkString(", ")))
+                case rta: RuntimeTypeAnnotations =>
+                    println(indent + "  [" + (i + 1) + " in " + _type + "]: RuntimeTypeAnnotation")
+                    rta.getAnnotations().foreach((_type: TypeAnnotation) => {
+                        print(indent + "    " + generate(_type, pool) + " (" + _type.target + ")")
+                        println(", (" + _type.path.map(_.toString()).mkString("_") + ")")
                     })
                 case stack: StackMapTable =>
                     println(indent + "  [" + (i + 1) + " in " + _type + "]: StackMapTable")

@@ -9,5 +9,5 @@ class Exceptions(data: ClassfileStream, pool: Array[ConstantInfo]) extends Attri
     }).toArray
 
     def getEx(): Array[String] = ex
-    override def toString(): String = super.toString() + ": " + ex.mkString("[", ",", "]")
+    override def toString(): String = super.toString() + ": " + getEx().mkString("[", ",", "]")
 }

@@ -26,7 +26,7 @@ object AnnotationGenerator {
 
     def generateFromElementValue(element: Element, pool: Array[CInfo], builder: Builder): String = {
         element.getTag() match {
-            case 'B'|'D'|'F'|'I'|'J'|'S'|'Z' => builder.append(extract(pool(element.getConstVal() - 1), pool))
+            case 'B'|'D'|'F'|'I'|'J'|'S'|'Z' => builder.append(extract(element.getConstVal(), pool))
             case 'C' => builder.append("'",  extract(element.getConstVal(), pool), "'")
             case 's' => builder.append("\"", extract(element.getConstVal(), pool), "\"")
             case 'c' => builder.append(parse(extract(element.getClassInfo(), pool)), ".class")
