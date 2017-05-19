@@ -5,6 +5,7 @@
 ---
 # Overview
 
+for learning scala
 
 
 # Requirements
@@ -14,3 +15,7 @@
 
 * Project Management
     * [Gradle 3.x](http://gradle.org/)
+
+* Test Environment
+    * [JUnit 4.12](http://junit.org/junit4/)
+    * [ScalaTest 2.12](http://www.scalatest.org/)
