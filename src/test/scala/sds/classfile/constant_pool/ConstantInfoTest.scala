@@ -2,7 +2,6 @@ package sds.classfile.constant_pool
 
 import org.junit.Test
 import org.scalatest.Assertions
-import sds.classfile.constant_pool._
 
 class ConstantInfoTest extends Assertions {
     @Test
@@ -59,30 +58,14 @@ class ConstantInfoTest extends Assertions {
     }
 
     @Test
-    def intTest(): Unit = {
-        val int: IntInfo = new IntInfo(0)
-        assert(int.int === 0)
+    def numberTest(): Unit = {
+        val int: NumberInfo    = new NumberInfo(ConstantType.INTEGER, 0)
+        val float: NumberInfo  = new NumberInfo(ConstantType.FLOAT,0.0f)
+        val long: NumberInfo   = new NumberInfo(ConstantType.LONG, 0L)
+        val double: NumberInfo = new NumberInfo(ConstantType.DOUBLE, 0.0)
         assert(int.toString() === "Int\t0")
-    }
-
-    @Test
-    def floatTest(): Unit = {
-        val float: FloatInfo = new FloatInfo(0.0f)
-        assert(float.float === 0.0)
         assert(float.toString() === "Float\t0.0")
-    }
-
-    @Test
-    def longTest(): Unit = {
-        val long: LongInfo = new LongInfo(0L)
-        assert(long.long === 0)
         assert(long.toString() === "Long\t0")
-    }
-
-    @Test
-    def doubleTest(): Unit = {
-        val double: DoubleInfo = new DoubleInfo(0.0)
-        assert(double.double === 0.0)
         assert(double.toString() === "Double\t0.0")
     }
 

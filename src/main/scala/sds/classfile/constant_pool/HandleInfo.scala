@@ -1,6 +1,6 @@
 package sds.classfile.constant_pool
 
-class HandleInfo(_refKind: Int, _refIndex: Int) extends ConstantInfo(ConstantType.HANDLE) {
+class HandleInfo(_refKind: Int, _refIndex: Int) extends ConstantInfo {
     def kind:  Int = _refKind
     def index: Int = _refIndex
     def kindValue: String = _refKind match {
@@ -15,5 +15,5 @@ class HandleInfo(_refKind: Int, _refIndex: Int) extends ConstantInfo(ConstantTyp
         case 9 => "REF_invokeInterface"
         case _ => throw new IllegalStateException("reference kind index is invalid value(" + _refKind + ")")
     }
-    override def toString(): String = super.toString + "\t" + kindValue + ":#" + index
+    override def toString(): String = s"MethodHandle\t$kindValue:#$index"
 }

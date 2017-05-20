@@ -138,12 +138,11 @@ class ClassfilePrinter(cf: Classfile) {
                     })
                 case stack: StackMapTable =>
                     println(indent + "  [" + (i + 1) + " in " + _type + "]: StackMapTable")
-                    val entries: Linked[Int, Hash[String, Buffer[String]]] = stack.getEntries()
-                    entries.foreach((entry: (Int, Hash[String, Buffer[String]])) => {
-                        println(indent + "    " + getFrame(entry._1) + " - " + entry._1)
-                        entry._2.foreach((e: (String, Buffer[String])) => {
-                            println(indent + "      " + e._1 + " - " + e._2.mkString("[", ", ", "]"))
-                        })
+                    stack.getEntries().foreach((entry: ((Int, Int), Hash[String, Buffer[String]])) => {
+                        val key: (Int, Int) = entry._1
+                        println(indent + "    " + getFrame(key._1) + " - tag:" + key._1 + ", offset:" + key._2)
+                        println(indent + "      stack  - " + entry._2("stack").mkString("[", ", ", "]"))
+                        println(indent + "      locals - " + entry._2("local").mkString("[", ", ", "]"))
                     })
                 case _ =>
                     val before: String = indent + "  [" + (i + 1) + " in " + _type + "]: "

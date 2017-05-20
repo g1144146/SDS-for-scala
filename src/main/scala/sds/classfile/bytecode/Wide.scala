@@ -17,5 +17,5 @@ class Wide(data: Stream, pool: Array[ConstantInfo], pc: Int) extends OpcodeInfo(
     def index:      Int    = ref.index
     def operand:    String = ref.operand
     def ldcType:    String = ref.ldcType
-    override def toString(): String = super.toString() + ref.toString() + ", " + const
+    override def toString(): String = super.toString() + ref.toString() + ", " + getConst()
 }

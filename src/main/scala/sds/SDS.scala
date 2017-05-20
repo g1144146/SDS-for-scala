@@ -25,7 +25,6 @@ class SDS(args: Array[String]) {
     }
 
     private def analyzeClassfile(): Unit = {
-        val out: Boolean = true
         classfiles.foreach((file: String) => {
             val reader: ClassfileReader = new ClassfileReader(file)
             reader.read()
@@ -36,7 +35,7 @@ class SDS(args: Array[String]) {
     }
 
     def run(): Unit = {
-        if(classfiles.length > 0) analyzeClassfile()
+        if(classfiles.nonEmpty) analyzeClassfile()
         if(jar != null) println("")
     }
 }

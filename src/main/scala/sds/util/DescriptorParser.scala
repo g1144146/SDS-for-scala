@@ -4,7 +4,7 @@ import scala.util.matching.Regex
 import scala.util.matching.Regex.Match
 
 object DescriptorParser {
-    private val obj: String = """L[a-z\.]*[0-9a-zA-Z_\$\.]+"""
+    private val OBJ: String = """L[a-z\.]*[0-9a-zA-Z_\$\.]+"""
     private val lang: String = "java.lang."
     private val langPackage: Array[String] = Array(
         "java.lang.annotation", "java.lang.instrument", "java.lang.invoke",
@@ -14,39 +14,34 @@ object DescriptorParser {
     def parse(desc: String): String = parse(desc, false)
 
     def parse(desc: String, hasAttribute: Boolean): String = {
-        val objPattern: String = "(" + obj + """|\[+""" + obj + ")"
-        val prmPattern: String = """(B|\[+B|C|\[+C|D|\[+D|F|\[+F|V|I|\[+I|J|\[+J|S|\[+S|Z|\[+Z)"""
-        val parenthesis: String = """(\(|\))"""
-        val gen: String = "T[A-Z]"
-        val genPattern: String = "(" + gen + """|\[+""" + gen + ")"
-        val colon: String = "(;:|::|:)"
+        val obj:      String = s"""($OBJ|\\[+$OBJ)"""
+        val prim:     String = """(B|\[+B|C|\[+C|D|\[+D|F|\[+F|V|I|\[+I|J|\[+J|S|\[+S|Z|\[+Z)"""
+        val paren:    String = """(\(|\))"""
+        val generics: String = """(T[A-Z]|\[+T[A-Z])"""
+        val colon:    String = "(;:|::|:)"
         val wildCard: String = """(\+|\*)"""
-        val diamond: String = "(<|>)"
-        val pattern = Array(objPattern, prmPattern, parenthesis, genPattern,
-                            colon, wildCard, diamond, "([A-Z])", "(;)")
-        val replaced: String = desc.replace("/", ".").replace(";>", ">").replace(";)", ")")
-        val regex: Regex = pattern.mkString("|").r()
-        var beforeParen = true
+        val diamond:  String = "(<|>)"
+        val regex: Regex = s"""$obj|$prim|$paren|$generics|$colon|$wildCard|$diamond|([A-Z])|(;)""".r
 
+        var beforeParen = true
         lazy val getMatched: (Match => String) = (m: Match) => {
             val matched: String = m.matched
             val len: Int  = matched.length
             if(matched.startsWith("[")) {
                 val last: Int = matched.lastIndexOf("[") + 1
                 var _type: String = ""
-                if(matched.matches(prmPattern)) {
+                if(matched.matches(prim)) {
                     _type = parsePrim(matched.substring(len - 1))
                     _type = _type.substring(0, _type.length - 1)
                 } else {
                     _type = matched.substring(last + 1, len)
                     _type = removeLangPrefix(_type)
                 }
-                _type += (0 until last).map((_: Int) => "[]").toArray.mkString
-                _type
+                _type + (0 until last).map((_: Int) => "[]").mkString
             } else if(matched.startsWith("L") || matched.matches("T[A-Z]+")) {
                 removeLangPrefix(matched.substring(1, len))
             } else if(matched.matches("""\(|\)|<|>""")) {
-                beforeParen = if(matched.matches("""\(|\)""")) false else true
+                beforeParen = (! matched.matches("""\(|\)"""))
                 matched
             } else if(matched.equals(";:")) {
                 " & "
@@ -66,15 +61,15 @@ object DescriptorParser {
                 ""
             }
         }
-        var parsed: String = regex.findAllMatchIn(replaced).map(getMatched(_)).toArray.mkString
+        val replaced: String = desc.replace("/", ".").replace(";>", ">").replace(";)", ")")
+        val parsed: String = regex.findAllMatchIn(replaced).map(getMatched).mkString
         Array(parsed)
             .map((s: String) => if(s.endsWith(","))  s.substring(0, s.length - 1) else s)
-            .map((s: String) => if(s.contains(",)")) s.replace(",)", ")")         else s)
-            .head
+            .map((s: String) => if(s.contains(",)")) s.replace(",)", ")")         else s).head
     }
 
     def removeLangPrefix(target: String): String = {
-        if(! target.startsWith(lang) || langPackage.exists(target.startsWith(_))) {
+        if(! target.startsWith(lang) || langPackage.exists(target.startsWith)) {
             return target
         }
         target.replace(lang, "")

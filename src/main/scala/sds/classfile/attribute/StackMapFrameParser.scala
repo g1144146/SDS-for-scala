@@ -1,61 +1,54 @@
 package sds.classfile.attribute
 
 import collection.mutable.{
-  ArrayBuffer   => Buffer,
-  HashMap       => Map,
-  LinkedHashMap => Linked
+  ArrayBuffer => Buffer,
+  HashMap => Map,
+  LinkedHashMap => Link
 }
-import sds.classfile.attribute.{
-  StackMapFrame        => Frame,
-  VerificationTypeInfo => Verify
-}
+import sds.classfile.attribute.{StackMapFrame => Frame, VerificationTypeInfo => Verify}
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
-
 import sds.classfile.bytecode.Operand.get
 import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.DescriptorParser.parse
 
 object StackMapFrameParser {
-    private def getBefore(parsed: Linked[Int, Map[String, Buffer[String]]], before: Int, _type: String):
-    Buffer[String] = {
+    private def getBefore(parsed: Link[(Int, Int), Map[String, Buffer[String]]], before: (Int, Int)): Buffer[String] = {
         if(parsed.contains(before) && (parsed(before) != null)) {
-            if(parsed(before).get(_type) ne null) {
-                return parsed(before).get(_type).get
+            if(parsed(before).contains("local") && parsed(before)("local") != null) {
+                return parsed(before)("local")
             }
         }
         Buffer()
     }
 
     def parseFrame(frames: Array[Frame], pool: Array[CInfo], opcodes: Array[Opcode]):
-    Linked[Int, Map[String, Buffer[String]]] = {
+    Link[(Int, Int), Map[String, Buffer[String]]] = {
         var before: Int = 0
-        val parsed: Linked[Int, Map[String, Buffer[String]]] = Linked()
+        var beforeTag: Int = 0
+        val parsed: Link[(Int, Int), Map[String, Buffer[String]]] = Link()
+        println("*** StackMapFrameParser.parse ***")
         frames.foreach((frame: Frame) => {
             val map: Map[String, Buffer[String]] = Map()
-            val local: Buffer[String] = getBefore(parsed, before, "local")
-            val list: Buffer[String] = Buffer()
-            var key: Int = 0
-            frame match {
+            val local: Buffer[String] = getBefore(parsed, (beforeTag, before))
+            val key: Int = frame match {
                 case sl: SameLocals1StackItemFrame =>
-                    list += parseVerify(sl.getStack(), pool, opcodes)
-                    map.put("stack", list)
+                    map.put("stack", Buffer(parseVerify(sl.getStack(), pool, opcodes)))
                     map.put("local", local)
-                    key = sl.tag - 64
+                    sl.tag - 64
                 case sle: SameLocals1StackItemFrameExtended =>
-                    list += parseVerify(sle.getStack(), pool, opcodes)
-                    map.put("stack", list)
+                    map.put("stack", Buffer(parseVerify(sle.getStack(), pool, opcodes)))
                     map.put("local", local)
-                    key = sle.getOffset()
+                    sle.getOffset()
                 case sfe: SameFrameExtended =>
-                    map.put("stack", list)
+                    map.put("stack", Buffer())
                     map.put("local", local)
-                    key = sfe.offset
+                    sfe.offset
                 case app: AppendFrame =>
-                    app.getLocals().foreach(local += parseVerify(_, pool, opcodes))
-                    map.put("stack", list)
+                    app.getLocals().foreach((v: Verify) => local += parseVerify(v, pool, opcodes))
+                    map.put("stack", Buffer())
                     map.put("local", local)
-                    key = app.offset
+                    app.offset
                 case full: FullFrame =>
                     val ffStack: Buffer[String] = full.getStacks().map((v: Verify) => {
                         parseVerify(v, pool, opcodes)
@@ -65,30 +58,30 @@ object StackMapFrameParser {
                     }).toBuffer.asInstanceOf[Buffer[String]]
                     map.put("stack", ffStack)
                     map.put("local", ffLocal)
-                    key = full.offset
+                    full.offset
                 case chop: ChopFrame =>
-                    val deleteArg: Int = 251 - chop.tag
-                    val argCount:  Int = local.size
-                    (((argCount - 1) - deleteArg) - 1 to argCount - 1 by -1).foreach(local.remove(_))
-//                    for(int i = argCount-1 i > ((argCount-1) - deleteArg) i--) {
-//                        local.remove(i)
-//                    }
-                    map.put("stack", list)
+                    val delArg: Int = 251 - chop.tag
+                    (0 until delArg).foreach((i :Int) => local.remove(local.size - 1))
+                    map.put("stack", Buffer())
                     map.put("local", local)
-                    key = chop.offset
+                    chop.offset
                 case s: SameFrame =>
-                    map.put("stack", list)
+                    map.put("stack", Buffer())
                     map.put("local", local)
-                    key = frame.tag
+                    s.tag
+                case _ => throw new RuntimeException("invalid StackMapFrame type.")
             }
-            parsed.put(key, map)
+            println(frame.toString() + " - stack: [" + map("stack") + "], local: [" + map("local") + "]")
+            parsed.put((frame.tag, key), map)
             before = key
+            beforeTag = frame.tag
         })
+        println("")
         parsed
     }
 
     private def parseVerify(info: Verify, pool: Array[CInfo], opcodes: Array[Opcode]): String = info match {
-        case ov: ObjectVar =>
+        case ov: ObjectVar        =>
             val value: String = extract(ov.cpool, pool)
             if(value.startsWith("[")) parse(value) else value
         case uv: UninitializedVar => get(opcodes(uv.offset), pool)

@@ -9,6 +9,7 @@ import sds.classfile.{ClassfileStream, MemberInfo};
 import sds.classfile.attribute.AttributeInfo
 import sds.classfile.constant_pool.{
   ConstantInfo        => CInfo,
+  NumberInfo,
   Utf8Info            => Utf8,
   ConstantInfoAdapter => Adapter
 }
@@ -63,11 +64,20 @@ class ClassfileReader {
             return pool
         }
         pool(i) = CInfo(data)
-        if(pool(i).tag == LONG || pool(i).tag == DOUBLE) {
-            pool(i + 1) = new Adapter()
-            readConstantPool(i + 2, pool)
-        } else {
-            readConstantPool(i + 1, pool)
+        pool(i) match {
+            case n: NumberInfo => n.number match {
+                case x if x.isInstanceOf[Long] || x.isInstanceOf[Double] =>
+                    pool(i + 1) = new Adapter()
+                    readConstantPool(i + 2, pool)
+                case _ => readConstantPool(i + 1, pool)
+            }
+            case _ => readConstantPool(i + 1, pool)
         }
+//        if(pool(i).tag == LONG || pool(i).tag == DOUBLE) {
+//            pool(i + 1) = new Adapter()
+//            readConstantPool(i + 2, pool)
+//        } else {
+//            readConstantPool(i + 1, pool)
+//        }
     }
 }

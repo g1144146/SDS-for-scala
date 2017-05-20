@@ -12,10 +12,10 @@ import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 import sds.classfile.attribute.StackMapFrameParser.parseFrame
 
 class StackMapTable(data: Stream, pool: Array[CInfo], opcodes: Array[Opcode]) extends AttributeInfo {
-    private val entries: Linked[Int, Map[String, Buffer[String]]] = parseFrame((0 until data.readShort())
-            .map((_: Int) => StackMapFrame(data)).toArray, pool, opcodes)
+    private val entries: Linked[(Int, Int), Map[String, Buffer[String]]] =
+        parseFrame((0 until data.readShort()).map((_: Int) => StackMapFrame(data)).toArray, pool, opcodes)
 
-    def getEntries(): Linked[Int, Map[String, Buffer[String]]] = entries
+    def getEntries(): Linked[(Int, Int), Map[String, Buffer[String]]] = entries
 }
 
 sealed abstract class StackMapFrame(_tag: Int) {

@@ -19,10 +19,7 @@ import sds.classfile.attribute.{
   TypeAnnotation
 }
 import sds.classfile.attribute.AnnotationGenerator.generate
-import sds.classfile.bytecode.{
-  OpcodeInfo,
-  InvokeDynamic
-}
+import sds.classfile.bytecode.{OpcodeInfo, InvokeDynamic}
 import sds.classfile.bytecode.{HasReferenceOpcode => Has}
 import sds.classfile.constant_pool.ConstantInfo
 import sds.classfile.constant_pool.{InvokeDynamicInfo => Invoke}
@@ -67,7 +64,6 @@ class ClassfileReaderTest extends Assertions {
         val pool: Array[ConstantInfo] = cf_1.pool
         assert(extract(cf_1.thisClass, pool) === "Hello")
         assert(extract(cf_1.superClass, pool) === "Object")
-        assert(pool(0).tag === METHOD)
         assert(pool(0).toString() === "Methodref\t#6.#17")
         assert(pool(2).toString() === "String\t#20")
         assert(pool(4).toString() === "Class\t#23")

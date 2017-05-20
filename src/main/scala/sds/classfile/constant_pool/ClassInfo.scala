@@ -1,6 +1,6 @@
 package sds.classfile.constant_pool
 
-class ClassInfo(_index: Int) extends ConstantInfo(ConstantType.CLASS) {
+class ClassInfo(_index: Int) extends ConstantInfo {
     def index: Int = _index
-    override def toString(): String = super.toString() + "\t#" + index
+    override def toString(): String = s"Class\t#$index"
 }

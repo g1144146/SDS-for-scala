@@ -8,8 +8,8 @@ import sds.classfile.bytecode.Operand.get
 
 class OpcodeInfoTest extends Assertions {
     val info: Array[ConstantInfo] = Array(
-        new Utf8Info("utf8"), new IntInfo(0),              new FloatInfo(0.0f),
-        new LongInfo(0L),     new DoubleInfo(0.0),         new StringInfo(1),
+        new Utf8Info("utf8"), new NumberInfo(ConstantType.INTEGER, 0), new NumberInfo(ConstantType.FLOAT, 0.0f),
+        new NumberInfo(ConstantType.LONG, 0L), new NumberInfo(ConstantType.DOUBLE, 0.0), new StringInfo(1),
         new HandleInfo(1, 1), new InvokeDynamicInfo(1, 1), new ConstantInfoAdapter(),
         new Utf8Info("java/lang/Object"), new ClassInfo(10), new MemberInfo(FIELD, 11, 1),
         new Utf8Info("([[Ljava/util/List;Ljava/lang/System;)V"), new NameAndTypeInfo(1, 13), new TypeInfo(13)

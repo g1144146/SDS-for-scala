@@ -1,21 +1,22 @@
 package sds.classfile.bytecode
 
 import sds.classfile.{ClassfileStream => Stream}
-import sds.classfile.bytecode.{MnemonicTable => Table}
 
 sealed abstract class SwitchOpcode(data: Stream, _type: String, pc: Int) extends OpcodeInfo(_type, pc) {
-    private var default: Int = -1
+    private val default: Int = initDefault()
     protected var offset: Array[Int] = null
     init()
 
     def getDefault(): Int = default
     def getOffset(): Array[Int] = offset
 
-    private def init(): Unit = {
+    private def initDefault(): Int = {
         skip(1, data)
-        this.default = data.readInt() + pc
-        if(_type.equals(Table.OPCODES(0xaa))) {
-            // in case of "tableswitch""
+        data.readInt() + pc
+    }
+
+    private def init(): Unit = {
+        if(_type.equals("tableswitch")) {
             val low:  Int = data.readInt()
             val high: Int = data.readInt()
             this.offset = (0 until (high - low + 1)).map((_: Int) => data.readInt() + pc).toArray
@@ -41,7 +42,7 @@ class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswit
     private var _match: Array[Int] = null
     initOffset()
 
-    def getMatch():  Array[Int] = _match
+    def getMatch(): Array[Int] = _match
     
     private def initOffset(): Unit = {
         val size: Int = data.readInt()
@@ -54,5 +55,5 @@ class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswit
     }
 
     override def toString(): String = super.toString() +
-        getMatch().indices.map((_: Int) => (_match(_), getOffset()(_))).toArray.mkString("[", "_", "]")
+        getMatch().indices.map((_: Int) => (getMatch()(_), getOffset()(_))).toArray.mkString("[", "_", "]")
 }

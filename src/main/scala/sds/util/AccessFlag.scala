@@ -1,33 +1,33 @@
 package sds.util
 
 object AccessFlag {
-    private val PUBLIC:       Int = 0x0001
-    private val PRIVATE:      Int = 0x0002
-    private val PROTECTED:    Int = 0x0004
-    private val STATIC:       Int = 0x0008
-    private val FINAL:        Int = 0x0010
+    private val PUBLIC:       (Int, String) = (0x0001, "public "      )
+    private val PRIVATE:      (Int, String) = (0x0002, "private "     )
+    private val PROTECTED:    (Int, String) = (0x0004, "protected "   )
+    private val STATIC:       (Int, String) = (0x0008, "static "      )
+    private val FINAL:        (Int, String) = (0x0010, "final "       )
+    private val SYNCHRONIZED: (Int, String) = (0x0020, "synchronized ")
+    private val VOLATILE:     (Int, String) = (0x0040, "volatile "    )
+    private val TRANSIENT:    (Int, String) = (0x0080, "transient "   )
+    private val NATIVE:       (Int, String) = (0x0100, "native "      )
+    private val INTERFACE:    (Int, String) = (0x0200, "interface "   )
+    private val ABSTRACT:     (Int, String) = (0x0400, "abstract "    )
+    private val STRICT:       (Int, String) = (0x0800, "strictfp "    )
+    private val SYNTHETIC:    (Int, String) = (0x1000, "synthetic "   )
+    private val ANNOTATION:   (Int, String) = (0x2000, "@interface "  )
+    private val ENUM:         (Int, String) = (0x4000, "enum "        )
     private val SUPER:        Int = 0x0020
-    private val SYNCHRONIZED: Int = 0x0020
-    private val VOLATILE:     Int = 0x0040
     private val BRIDGE:       Int = 0x0040
-    private val TRANSIENT:    Int = 0x0080
     private val VARARGS:      Int = 0x0080
-    private val NATIVE:       Int = 0x0100
-    private val INTERFACE:    Int = 0x0200
-    private val ABSTRACT:     Int = 0x0400
-    private val STRICT:       Int = 0x0800
-    private val SYNTHETIC:    Int = 0x1000
-    private val ANNOTATION:   Int = 0x2000
-    private val ENUM:         Int = 0x4000
-    private val MANDATED:     Int = 0x8000
-    private val CLASS:  Int = PUBLIC | FINAL | SUPER | INTERFACE | ABSTRACT | SYNTHETIC | ANNOTATION | ENUM
-    private val FIELD:  Int = PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | VOLATILE | TRANSIENT |
-                              SYNTHETIC | ENUM
-    private val METHOD: Int = PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | SYNCHRONIZED | BRIDGE | VARARGS | 
-                              NATIVE | ABSTRACT | STRICT | SYNTHETIC
-    private val NESTED: Int = PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL |
-                              INTERFACE | ABSTRACT | SYNTHETIC | ANNOTATION | ENUM
-    private val LOCAL:  Int = FINAL
+    private val CLASS:  Int = PUBLIC._1   | FINAL._1     | SUPER         | INTERFACE._1 |
+                              ABSTRACT._1 | SYNTHETIC._1 | ANNOTATION._1 | ENUM._1
+    private val FIELD:  Int = PUBLIC._1 | PRIVATE._1 | PROTECTED._1 | STATIC._1 | FINAL._1 | VOLATILE._1 | TRANSIENT._1 |
+                              SYNTHETIC._1 | ENUM._1
+    private val METHOD: Int = PUBLIC._1 | PRIVATE._1 | PROTECTED._1 | STATIC._1   |  FINAL._1 | SYNCHRONIZED._1 |
+                              BRIDGE    | VARARGS    | NATIVE._1    | ABSTRACT._1 | STRICT._1 | SYNTHETIC._1
+    private val NESTED: Int = PUBLIC._1    | PRIVATE._1  | PROTECTED._1 | STATIC._1     | FINAL._1 |
+                              INTERFACE._1 | ABSTRACT._1 | SYNTHETIC._1 | ANNOTATION._1 | ENUM._1
+    private val LOCAL:  Int = FINAL._1
 
     def get(flag: Int, _type: String): String = {
         if(_type.eq("class")  && checkOr(flag, CLASS))  return getClassFlag(flag)
@@ -38,54 +38,19 @@ object AccessFlag {
         throw new IllegalArgumentException()
     }
 
-    private def getClassFlag(flag: Int): String = {
-        val flagStr: StringBuilder = new StringBuilder()
-        if(checkAnd(flag, PUBLIC))     flagStr.append("public ")
-        if(checkAnd(flag, STATIC))     flagStr.append("static ")
-        if(checkAnd(flag, FINAL))      flagStr.append("final ")
-        if(checkAnd(flag, ABSTRACT))   flagStr.append("abstract ")
-        if(checkAnd(flag, SYNTHETIC))  flagStr.append("synthetic ")
-        if(checkAnd(flag, ANNOTATION)) flagStr.append("@interface ")
-        if(checkAnd(flag, ENUM))       flagStr.append("enum ")
-        if(checkAnd(flag, INTERFACE) && ((flag & ANNOTATION) == 0)) {
-            flagStr.append("interface ")
-        }
-        if((flag & (INTERFACE | ENUM | ANNOTATION)) == 0) {
-            flagStr.append("class ")
-        }
-        flagStr.toString()
+    private def getClassFlag(flag: Int): String  = {
+        val _type: String = if(checkAnd(flag, INTERFACE._1) && ((flag & ANNOTATION._1) == 0)) "interface "
+                            else if((flag & (INTERFACE._1 | ENUM._1 | ANNOTATION._1)) == 0)   "class "    else ""
+        build(flag, PUBLIC, STATIC, FINAL, ABSTRACT, SYNTHETIC, ANNOTATION, ENUM) + _type
     }
+    private def getFieldFlag(flag: Int): String  =
+        build(flag, PUBLIC, PRIVATE, PROTECTED, STATIC, FINAL, VOLATILE, TRANSIENT, SYNTHETIC, ENUM)
+    private def getMethodFlag(flag: Int): String =
+        build(flag, PUBLIC, PRIVATE, PROTECTED, STATIC, FINAL, SYNCHRONIZED, NATIVE, ABSTRACT, STRICT, SYNTHETIC)
+    private def getLocalFlag(flag: Int): String = if(checkAnd(flag, FINAL._1)) "final " else ""
 
-    private def getFieldFlag(flag: Int): String = {
-        val flagStr: StringBuilder = new StringBuilder()
-        if(checkAnd(flag, PUBLIC))     flagStr.append("public ")
-        if(checkAnd(flag, PRIVATE))    flagStr.append("private ")
-        if(checkAnd(flag, PROTECTED))  flagStr.append("protected ")
-        if(checkAnd(flag, STATIC))     flagStr.append("static ")
-        if(checkAnd(flag, FINAL))      flagStr.append("final ")
-        if(checkAnd(flag, VOLATILE))   flagStr.append("volatile ")
-        if(checkAnd(flag, TRANSIENT))  flagStr.append("transient ")
-        if(checkAnd(flag, SYNTHETIC))  flagStr.append("synthetic ")
-        if(checkAnd(flag, ENUM))       flagStr.append("enum ")
-        flagStr.toString()
-    }
-
-    private def getMethodFlag(flag: Int): String = {
-        val flagStr: StringBuilder = new StringBuilder()
-        if(checkAnd(flag, PUBLIC))         flagStr.append("public ")
-        if(checkAnd(flag, PRIVATE))        flagStr.append("private ")
-        if(checkAnd(flag, PROTECTED))      flagStr.append("protected ")
-        if(checkAnd(flag, STATIC))         flagStr.append("static ")
-        if(checkAnd(flag, FINAL))          flagStr.append("final ")
-        if(checkAnd(flag, SYNCHRONIZED))   flagStr.append("synchronized ")
-        if(checkAnd(flag, NATIVE))         flagStr.append("native ")
-        if(checkAnd(flag, ABSTRACT))       flagStr.append("abstract ")
-        if(checkAnd(flag, STRICT))         flagStr.append("strictfp ")
-        if(checkAnd(flag, SYNTHETIC))      flagStr.append("synthetic ")
-        flagStr.toString()
-    }
-
-    private def getLocalFlag(flag: Int): String = if(checkAnd(flag, FINAL)) "final " else ""
+    private def build(target: Int, flags: (Int, String)*): String =
+        flags.filter((t: (Int, String)) => checkAnd(target, t._1)).map(_._2).mkString
     private def checkAnd(target: Int, flag: Int): Boolean = (target & flag) == flag
     private def checkOr(target:  Int, flag: Int): Boolean = (target | flag) == flag
 }

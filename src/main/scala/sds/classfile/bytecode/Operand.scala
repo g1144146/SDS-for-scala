@@ -9,7 +9,7 @@ object Operand {
         case iinc:   Iinc               => iinc.index.toString +  "," + iinc.const.toString
         case index:  IndexOpcode        => index.index.toString
         case inter:  InvokeInterface    => inter.getCount() + "," + extract(inter.index, pool)
-        case multi:  MultiANewArray     => multi.getDimensions() + "," + extract(multi.index, pool)
+        case multi:  MultiANewArray     => multi.dimensions + "," + extract(multi.index, pool)
         case array:  NewArray           => array.atype
         case push:   PushOpcode         => push.value.toString
         case wide:   Wide               => wide.getConst() + ", " + extract(wide.index, pool)
