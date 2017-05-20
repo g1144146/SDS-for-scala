@@ -10,7 +10,7 @@ object ConstantInfo {
     def apply(data: ClassfileStream): ConstantInfo = {
         val tag: Int = data.byte
         tag match {
-            case UTF8    => new Utf8Info(new String(data.readFully(new Array[Byte](data.short)), "utf-8"))
+            case UTF8    => new Utf8Info(new String(data.fully(new Array[Byte](data.short)), "utf-8"))
             case INTEGER => new NumberInfo(tag, data.int)
             case FLOAT   => new NumberInfo(tag, data.float)
             case LONG    => new NumberInfo(tag, data.long)

@@ -23,9 +23,8 @@ class ClassfileStream extends AutoCloseable {
     def long:          Long   = throw new UnsupportedOperationException("unimplemented method.")
     def short:         Int    = throw new UnsupportedOperationException("unimplemented method.")
     def unsignedByte:  Int    = throw new UnsupportedOperationException("unimplemented method.")
-    def unsignedShort: Int    = throw new UnsupportedOperationException("unimplemented method.")
     def pointer:       Int    = throw new UnsupportedOperationException("unimplemented method.")
-    def readFully(b: Array[Byte]): Array[Byte] = throw new UnsupportedOperationException("unimplemented method.")
+    def fully(b: Array[Byte]): Array[Byte] = throw new UnsupportedOperationException("unimplemented method.")
     override def close(): Unit = throw new UnsupportedOperationException("unimplemented method.")
 
     private def create(file: String):        ClassfileStream = new ImplWithRandomAccessFile(file)
@@ -42,8 +41,7 @@ class ClassfileStream extends AutoCloseable {
         override def long:          Long   = raf.readLong
         override def short:         Int    = raf.readShort
         override def unsignedByte:  Int    = raf.readUnsignedByte
-        override def unsignedShort: Int    = raf.readUnsignedShort
-        override def readFully(b: Array[Byte]): Array[Byte] = {
+        override def fully(b: Array[Byte]): Array[Byte] = {
             raf.readFully(b)
             b
         }
@@ -62,12 +60,11 @@ class ClassfileStream extends AutoCloseable {
         override def long:          Long   = read(Lo.BYTES,        stream.readLong)
         override def short:         Int    = read(Short.BYTES,     stream.readShort)
         override def unsignedByte:  Int    = read(By.BYTES,        stream.readUnsignedByte)
-        override def unsignedShort: Int    = read(Short.BYTES,     stream.readUnsignedShort)
         override def skip(n: Int): Unit = {
             _pointer += n
             stream.skipBytes(n)
         }
-        override def readFully(b: Array[Byte]): Array[Byte] = {
+        override def fully(b: Array[Byte]): Array[Byte] = {
             _pointer += b.length
             stream.readFully(b)
             b

@@ -2,10 +2,9 @@ package sds
 
 import java.io.{
   IOException,
-  InputStream,
-  RandomAccessFile
+  InputStream
 }
-import sds.classfile.{ClassfileStream => Stream, MemberInfo};
+import sds.classfile.{ClassfileStream => Stream, MemberInfo}
 import sds.classfile.attribute.{AttributeInfo => Attribute}
 import sds.classfile.constant_pool.{
   ConstantInfo        => CInfo,
