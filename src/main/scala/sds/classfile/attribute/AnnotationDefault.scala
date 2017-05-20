@@ -7,8 +7,6 @@ import sds.util.{MultiArgsStringBuilder => Builder}
 import sds.classfile.attribute.AnnotationGenerator.generateFromElementValue
 
 class AnnotationDefault(data: Stream, pool: Array[CInfo]) extends AttributeInfo {
-    private val default: String = generateFromElementValue(new ElementValue(data), pool, new Builder())
-
-    def getDefault(): String = default
-    override def toString(): String = super.toString() + ": " + getDefault()
+    val default: String = generateFromElementValue(new ElementValue(data), pool, new Builder())
+    override def toString(): String = super.toString() + ": " + default
 }

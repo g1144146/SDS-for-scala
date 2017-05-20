@@ -33,27 +33,27 @@ object StackMapFrameParser {
             val local: Buffer[String] = getBefore(parsed, (beforeTag, before))
             val key: Int = frame match {
                 case sl: SameLocals1StackItemFrame =>
-                    map.put("stack", Buffer(parseVerify(sl.getStack(), pool, opcodes)))
+                    map.put("stack", Buffer(parseVerify(sl.stack, pool, opcodes)))
                     map.put("local", local)
                     sl.tag - 64
                 case sle: SameLocals1StackItemFrameExtended =>
-                    map.put("stack", Buffer(parseVerify(sle.getStack(), pool, opcodes)))
+                    map.put("stack", Buffer(parseVerify(sle.stack, pool, opcodes)))
                     map.put("local", local)
-                    sle.getOffset()
+                    sle.offset
                 case sfe: SameFrameExtended =>
                     map.put("stack", Buffer())
                     map.put("local", local)
                     sfe.offset
                 case app: AppendFrame =>
-                    app.getLocals().foreach((v: Verify) => local += parseVerify(v, pool, opcodes))
+                    app.locals.foreach((v: Verify) => local += parseVerify(v, pool, opcodes))
                     map.put("stack", Buffer())
                     map.put("local", local)
                     app.offset
                 case full: FullFrame =>
-                    val ffStack: Buffer[String] = full.getStacks().map((v: Verify) => {
+                    val ffStack: Buffer[String] = full.stacks.map((v: Verify) => {
                         parseVerify(v, pool, opcodes)
                     }).toBuffer.asInstanceOf[Buffer[String]]
-                    val ffLocal: Buffer[String] = full.getLocals().map((v: Verify) => {
+                    val ffLocal: Buffer[String] = full.locals.map((v: Verify) => {
                         parseVerify(v, pool, opcodes)
                     }).toBuffer.asInstanceOf[Buffer[String]]
                     map.put("stack", ffStack)

@@ -2,8 +2,7 @@ package sds.util
 
 import collection.mutable.{
   ArrayBuffer   => Buffer,
-  HashMap       => Hash,
-  LinkedHashMap => Linked
+  HashMap       => Hash
 }
 import sds.Classfile
 import sds.classfile.{MemberInfo => Member}
@@ -24,11 +23,9 @@ class ClassfilePrinter(cf: Classfile) {
 
     def _print(): Unit = {
         println("<<< Magic Number >>>")
-        println("  " + Integer.toHexString(cf.magic))
-        println("<<< Major Version >>>")
-        println("  " + cf.major)
-        println("<<< Minor Version >>>")
-        println("  " + cf.minor)
+        println(s"  ${Integer.toHexString(cf.magic)}")
+        println("<<< Version >>>")
+        println(s"  ${cf.major}.${cf.minor}")
 
         printPool()
         printClass()
@@ -39,27 +36,27 @@ class ClassfilePrinter(cf: Classfile) {
 
     private def printPool(): Unit = {
         println("<<< Constant Pool >>>")
-        pool.indices.foreach((i) => println("  [" + (i + 1) + "]: " + pool(i).toString()))
+        pool.indices.foreach((i) => println(s"  [${i + 1}]: ${pool(i).toString()}"))
     }
 
     private def printClass(): Unit = {
         println("<<< Class >>>")
-        val thisClass: String = extract(cf.thisClass, pool)
-        val superClass: String = if(check(cf.superClass)) " extends " + extract(cf.superClass, pool) else " "
-        val interface: String = if(cf.interfaces.length > 0) {
-            " implements " + cf.interfaces.map(extract(_, pool)).reduce((x, y) => x + ", " + y)
+        val thisClass: String  = extract(cf.thisClass, pool)
+        val superClass: String = if(check(cf.superClass)) s" extends ${extract(cf.superClass, pool)}" else " "
+        val interface: String  = if(cf.interfaces.length > 0) {
+            s" implements ${cf.interfaces.map(extract(_, pool)).mkString(", ")}"
         } else {
             ""
         }
-        println("  " + get(cf.access, "class") + thisClass + superClass + interface)
+        println(s"  ${get(cf.access, "class")}$thisClass$superClass$interface")
     }
 
     private def printField(): Unit = {
         println("    <<< Field >>>")
         val fields: Array[Member] = cf.fields
         fields.indices.foreach((i) => {
-                println("      [" + (i + 1) + "]: " + fields(i).toString())
-                printAttribute("          ", fields(i).getAttributes(), "field")
+            println(s"      [${i + 1}]: ${fields(i).toString()}")
+            printAttribute("          ", fields(i).attributes, "field")
         })
     }
 
@@ -67,86 +64,84 @@ class ClassfilePrinter(cf: Classfile) {
         println("    <<< Method >>>")
         val methods: Array[Member] = cf.methods
         methods.indices.foreach((i) => {
-            println("      [" + (i + 1) + "]: " + methods(i).toString())
-            printAttribute("          ", methods(i).getAttributes(), "method")
+            println(s"      [${i + 1}]: ${methods(i).toString()}")
+            printAttribute("          ", methods(i).attributes, "method")
         })
     }
 
     private def printAttribute(indent: String, attr: Array[AttributeInfo], _type: String): Unit = {
         if(attr.length == 0) return
-        println(indent + "<<< Attribute in " + _type + " >>>")
+        println(s"$indent<<< Attribute in ${_type} >>>")
         attr.indices.foreach((i) => {
             attr(i) match {
                 case boot: BootstrapMethods =>
-                    println(indent + "  [" + (i + 1) + " in " + _type + "]: BootstrapMethods")
-                    val bsm: Array[(String, Array[String])] = boot.getBSM()
+                    println(s"$indent  [${i + 1} in ${_type}]: BootstrapMethods")
+                    val bsm: Array[(String, Array[String])] = boot.bsm
                     bsm.indices.foreach((i: Int) => {
                         val t: (String, Array[String]) = bsm(i)
-                        println(indent + "    (" + i + "): ")
-                        println(indent + "        bsm_ref : " + t._1)
-                        println(indent + "        bsm_args: " + t._2.mkString(", "))
+                        println(s"$indent    ($i): ")
+                        println(s"$indent        bsm_ref : ${t._1}")
+                        println(s"$indent        bsm_args: ${t._2.mkString(", ")}")
                     })
                 case code: Code =>
-                    println(indent + "  [" + (i + 1) + " in " + _type + "]: Code")
-                    println(indent + "  max_stack: " + code.getMaxStack() + ", max_locals: " + code.getMaxLocals())
-                    val opcodes: Array[Opcode] = code.getOpcodes()
-                    opcodes.indices.foreach((i: Int) => println(indent + "    " + opcodes(i)))
-                    val table: Array[(Array[Int], String)] = code.getExTable()
+                    println(s"$indent  [${i + 1} in ${_type}]: Code")
+                    println(s"$indent  max_stack: ${code.maxStack}, max_locals: ${code.maxLocals}")
+                    val opcodes: Array[Opcode] = code.opcodes
+                    opcodes.indices.foreach((i: Int) => println(s"$indent    ${opcodes(i)}"))
+                    val table: Array[(Array[Int], String)] = code.exTable
                     if(table.length > 0) {
-                        println(indent + "  Exception Table:")
+                        println(s"$indent  Exception Table:")
                         table.indices.foreach((i: Int) => {
-                            val t: Array[Int] = table(i)._1
+                            val t: Array[Int]   = table(i)._1
                             val target:  String = table(i)._2
-                            println(indent + "    [" + i + "]: " + t(0) + "-" + t(1) + ", " + t(2) + ": " + target)
+                            println(s"$indent    [$i]: ${t(0)}-${t(1)}, ${t(2)}: $target")
                         })
                     }
-                    printAttribute(indent + "    ", code.getAttributes(), "Code")
+                    printAttribute(s"$indent    ", code.attributes, "Code")
                 case ic: InnerClasses =>
-                    println(indent + "  [" + (i + 1) + " in " + _type + "]: InnerClasses")
-                    val inner: Array[Array[String]] = ic.getClasses()
+                    println(s"$indent  [${i + 1} in ${_type}]: InnerClasses")
+                    val inner: Array[Array[String]] = ic.classes
                     inner.indices.foreach((i: Int) => {
-                        val first:  String = indent + "    (" + (i + 1) + "): "
-                        val second: String = inner(i)(3) + inner(i)(0) + " " + inner(i)(2)
-                        val third:  String = if(inner(i)(1).length > 0)" {in " + inner(i)(1) + "}" else ""
-                        println(first + second + third)
+                        val first:  String = s"$indent    (${i + 1}): "
+                        val second: String = s"${inner(i)(3)}${inner(i)(0)} ${inner(i)(2)}"
+                        val third:  String = if(inner(i)(1).length > 0) s" {in ${inner(i)(1)}}" else ""
+                        println(s"$first$second$third")
                     })
                 case line: LineNumberTable =>
-                    println(indent + "  [" + (i + 1) + " in " + _type + "]: LineNumberTable")
+                    println(s"$indent  [${i + 1} in ${_type}]: LineNumberTable")
                     val lines: Array[String] = line.getTableStr()
-                    lines.indices.foreach((i: Int) => println(indent + "    [" + i + "]: " + lines(i)))
+                    lines.indices.foreach((i: Int) => println(s"$indent    [$i]: ${lines(i)}"))
                 case local: LocalVariable =>
-                    println(indent + "  [" + (i + 1) + " in " + _type + "]: LocalVariable")
+                    println(s"$indent  [${i + 1} in ${_type}]: LocalVariable")
                     val name:  Array[Array[String]] = local.getNameTable()
                     val table: Array[Array[Int]]    = local.getTable()
                     name.indices.foreach((i: Int) => {
-                        val first: String  = indent + "    [" + i + "]: "
-                        val second: String = name(i)(1) + " " + name(i)(0)
-                        val third: String  = " {" + table(i)(0) + "-" + table(i)(1) + "}"
-                        println(first + second + third)
+                        val first: String  = s"$indent    [$i]: "
+                        val second: String = s"${name(i)(1)} ${name(i)(0)}"
+                        val third: String  = s" {${table(i)(0)}-${table(i)(1)}"
+                        println(s"$first$second$third")
                     })
                 case ra: RuntimeAnnotations =>
-                    println(indent + "  [" + (i + 1) + " in " + _type + "]: RuntimeAnnotation")
-                    ra.getAnnotations().foreach((a: String) => println(indent + "    " + a))
+                    println(s"$indent  [${i + 1} in ${_type}]: RuntimeAnnotation")
+                    ra.annotations.foreach((a: String) => println(s"$indent    $a"))
                 case rpa: RuntimeParameterAnnotations =>
-                    println(indent + "  [" + (i + 1) + " in " + _type + "]: RuntimeParameterAnnotation")
-                    rpa.getAnnotations().foreach((a: Array[String]) => println(indent + "    " + a.mkString(", ")))
+                    println(s"$indent  [${i + 1} in ${_type}]: RuntimeParameterAnnotation")
+                    rpa.annotations.foreach((a: Array[String]) => println(s"$indent    ${a.mkString(", ")}"))
                 case rta: RuntimeTypeAnnotations =>
-                    println(indent + "  [" + (i + 1) + " in " + _type + "]: RuntimeTypeAnnotation")
-                    rta.getAnnotations().foreach((_type: TypeAnnotation) => {
-                        print(indent + "    " + generate(_type, pool) + " (" + _type.target + ")")
-                        println(", (" + _type.path.map(_.toString()).mkString("_") + ")")
+                    println(s"$indent  [${i + 1} in ${_type}]: RuntimeTypeAnnotation")
+                    rta.annotations.foreach((_type: TypeAnnotation) => {
+                        print(s"$indent    ${generate(_type, pool)} (${_type.target})")
+                        println(s", (${_type.path.map(_.toString()).mkString("_")})")
                     })
                 case stack: StackMapTable =>
-                    println(indent + "  [" + (i + 1) + " in " + _type + "]: StackMapTable")
-                    stack.getEntries().foreach((entry: ((Int, Int), Hash[String, Buffer[String]])) => {
+                    println(s"$indent  [${i + 1} in ${_type}]: StackMapTable")
+                    stack.entries.foreach((entry: ((Int, Int), Hash[String, Buffer[String]])) => {
                         val key: (Int, Int) = entry._1
-                        println(indent + "    " + getFrame(key._1) + " - tag:" + key._1 + ", offset:" + key._2)
-                        println(indent + "      stack  - " + entry._2("stack").mkString("[", ", ", "]"))
-                        println(indent + "      locals - " + entry._2("local").mkString("[", ", ", "]"))
+                        println(s"$indent    ${getFrame(key._1)} - tag:${key._1}, offset:${key._2}")
+                        println(s"$indent      stack  - ${entry._2("stack").mkString("[", ", ", "]")}")
+                        println(s"$indent      locals - ${entry._2("local").mkString("[", ", ", "]")}")
                     })
-                case _ =>
-                    val before: String = indent + "  [" + (i + 1) + " in " + _type + "]: "
-                    println(before + attr(i).toString())
+                case _ => println(s"$indent  [${i + 1} in ${_type}]: ${attr(i).toString()}")
             }
         })
     }
@@ -159,7 +154,7 @@ class ClassfilePrinter(cf: Classfile) {
         if(tag == 251)                 return "SameFrameExtended"
         if((252 to 254).contains(tag)) return "AppendFrame"
         if(tag == 255)                 return "FullFrame"
-        throw new RuntimeException("unknown tag(" + tag + ")")
+        throw new RuntimeException(s"unknown tag($tag)")
     }
 
     private def check(index: Int): Boolean = pool.indices.contains(index)

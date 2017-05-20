@@ -5,24 +5,22 @@ import java.io.{
   InputStream,
   RandomAccessFile
 }
-import sds.classfile.{ClassfileStream, MemberInfo};
-import sds.classfile.attribute.AttributeInfo
+import sds.classfile.{ClassfileStream => Stream, MemberInfo};
+import sds.classfile.attribute.{AttributeInfo => Attribute}
 import sds.classfile.constant_pool.{
   ConstantInfo        => CInfo,
   NumberInfo,
   Utf8Info            => Utf8,
   ConstantInfoAdapter => Adapter
 }
-import sds.classfile.constant_pool.ConstantType.{LONG, DOUBLE}
 
 class ClassfileReader {
-    private var data: ClassfileStream = null
     val classfile: Classfile = new Classfile()
 
     def this(data: InputStream) {
         this()
         try {
-            this.data = new ClassfileStream(data)
+            read(Stream(data))
         } catch {
             case e: IOException => e.printStackTrace()
         }
@@ -31,35 +29,35 @@ class ClassfileReader {
     def this(fileName: String) {
         this()
         try {
-            this.data = new ClassfileStream(new RandomAccessFile(fileName, "r"))
+            read(Stream(fileName))
         } catch {
             case e: IOException => e.printStackTrace()
         }
     }
 
-    def read(): Unit = {
-        classfile.magic = data.readInt()
-        classfile.minor = data.readShort()
-        classfile.major = data.readShort()
-        classfile.pool = readConstantPool(0, new Array[CInfo](data.readShort() - 1))
-        classfile.access = data.readShort()
-        classfile.thisClass = data.readShort()
-        classfile.superClass = data.readShort()
-        classfile.interfaces = (0 until data.readShort()).map((_: Int) => data.readShort()).toArray
+    private def read(data: Stream): Unit = {
+        classfile.magic = data.int
+        classfile.minor = data.short
+        classfile.major = data.short
+        classfile.pool = readConstantPool(0, new Array[CInfo](data.short - 1), data)
+        classfile.access = data.short
+        classfile.thisClass = data.short
+        classfile.superClass = data.short
+        classfile.interfaces = (0 until data.short).map((_: Int) => data.short).toArray
 
-        lazy val genAttr: ((Int) => (AttributeInfo)) = (_: Int) => {
-            val name: Int = data.readShort()
-            val utf8: Utf8 = classfile.pool(name - 1).asInstanceOf[Utf8]
-            AttributeInfo(utf8.value, data, classfile.pool)
+        lazy val genAttr: ((Stream, Array[CInfo]) => (Attribute)) = (_data: Stream, _pool: Array[CInfo]) => {
+            val name: Int = _data.short
+            val utf8: Utf8 = _pool(name - 1).asInstanceOf[Utf8]
+            Attribute(utf8.value, _data, _pool)
         }
-        lazy val genMember: ((Int) => (MemberInfo)) = (_: Int) => new MemberInfo(data, classfile.pool)
-        classfile.fields     = (0 until data.readShort()).map(genMember).toArray
-        classfile.methods    = (0 until data.readShort()).map(genMember).toArray
-        classfile.attributes = (0 until data.readShort()).map(genAttr).toArray
+        lazy val genMember: ((Int) => (MemberInfo)) = (_: Int) => new MemberInfo(data, classfile.pool, genAttr)
+        classfile.fields     = (0 until data.short).map(genMember).toArray
+        classfile.methods    = (0 until data.short).map(genMember).toArray
+        classfile.attributes = (0 until data.short).map((_: Int) => genAttr(data, classfile.pool)).toArray
         data.close()
     }
 
-    private def readConstantPool(i: Int, pool: Array[CInfo]): Array[CInfo] = {
+    private def readConstantPool(i: Int, pool: Array[CInfo], data: Stream): Array[CInfo] = {
         if(i >= pool.length) {
             return pool
         }
@@ -68,16 +66,10 @@ class ClassfileReader {
             case n: NumberInfo => n.number match {
                 case x if x.isInstanceOf[Long] || x.isInstanceOf[Double] =>
                     pool(i + 1) = new Adapter()
-                    readConstantPool(i + 2, pool)
-                case _ => readConstantPool(i + 1, pool)
+                    readConstantPool(i + 2, pool, data)
+                case _ => readConstantPool(i + 1, pool,data)
             }
-            case _ => readConstantPool(i + 1, pool)
+            case _ => readConstantPool(i + 1, pool, data)
         }
-//        if(pool(i).tag == LONG || pool(i).tag == DOUBLE) {
-//            pool(i + 1) = new Adapter()
-//            readConstantPool(i + 2, pool)
-//        } else {
-//            readConstantPool(i + 1, pool)
-//        }
     }
 }

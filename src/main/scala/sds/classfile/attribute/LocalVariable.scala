@@ -10,15 +10,15 @@ class LocalVariable(data: Stream, pool: Array[CInfo], private val name: String) 
     init()
 
     def init(): Unit = {
-        val size: Int = data.readShort()
+        val size: Int = data.short
         this.table = new Array(size)
         this.nameTable = new Array(size)
         (0 until size).foreach((i: Int) => {
-            val start: Int = data.readShort()
-            val end:   Int = data.readShort() + start
-            val nameIndex: Int = data.readShort()
-            val descIndex: Int = data.readShort()
-            val index: Int = data.readShort()
+            val start: Int = data.short
+            val end:   Int = data.short + start
+            val nameIndex: Int = data.short
+            val descIndex: Int = data.short
+            val index: Int = data.short
             val name: String = extract(nameIndex, pool)
             val desc: String = if(descIndex - 1 > 0) parse(extract(descIndex, pool)) else ""
             table(i) = Array(start, end, index)

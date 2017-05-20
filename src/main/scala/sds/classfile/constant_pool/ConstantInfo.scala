@@ -8,22 +8,22 @@ abstract class ConstantInfo extends Information
 
 object ConstantInfo {
     def apply(data: ClassfileStream): ConstantInfo = {
-        val tag: Int = data.readByte()
+        val tag: Int = data.byte
         tag match {
-            case UTF8    => new Utf8Info(new String(data.readFully(new Array[Byte](data.readShort())), "utf-8"))
-            case INTEGER => new NumberInfo(tag, data.readInt())
-            case FLOAT   => new NumberInfo(tag, data.readFloat())
-            case LONG    => new NumberInfo(tag, data.readLong())
-            case DOUBLE  => new NumberInfo(tag, data.readDouble())
-            case CLASS   => new ClassInfo(data.readShort())
-            case STRING  => new StringInfo(data.readShort())
-            case FIELD          => new MemberInfo(FIELD, data.readShort(), data.readShort())
-            case METHOD         => new MemberInfo(METHOD, data.readShort(), data.readShort())
-            case INTERFACE      => new MemberInfo(INTERFACE, data.readShort(), data.readShort())
-            case NAME_AND_TYPE  => new NameAndTypeInfo(data.readShort(), data.readShort())
-            case HANDLE         => new HandleInfo(data.readByte(), data.readShort())
-            case TYPE           => new TypeInfo(data.readShort())
-            case INVOKE_DYNAMIC => new InvokeDynamicInfo(data.readShort(), data.readShort())
+            case UTF8    => new Utf8Info(new String(data.readFully(new Array[Byte](data.short)), "utf-8"))
+            case INTEGER => new NumberInfo(tag, data.int)
+            case FLOAT   => new NumberInfo(tag, data.float)
+            case LONG    => new NumberInfo(tag, data.long)
+            case DOUBLE  => new NumberInfo(tag, data.double)
+            case CLASS   => new ClassInfo(data.short)
+            case STRING  => new StringInfo(data.short)
+            case FIELD          => new MemberInfo(FIELD, data.short, data.short)
+            case METHOD         => new MemberInfo(METHOD, data.short, data.short)
+            case INTERFACE      => new MemberInfo(INTERFACE, data.short, data.short)
+            case NAME_AND_TYPE  => new NameAndTypeInfo(data.short, data.short)
+            case HANDLE         => new HandleInfo(data.byte, data.short)
+            case TYPE           => new TypeInfo(data.short)
+            case INVOKE_DYNAMIC => new InvokeDynamicInfo(data.short, data.short)
             case _ => new ConstantInfoAdapter()
         }
     }

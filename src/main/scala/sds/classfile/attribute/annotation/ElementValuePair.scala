@@ -3,15 +3,12 @@ package sds.classfile.attribute.annotation
 import sds.classfile.ClassfileStream
 
 class ElementValuePair(data: ClassfileStream) {
-    private val name: Int = data.readShort()
-    private val value: ElementValue = new ElementValue(data)
-
-    def getName(): Int = name
-    def getValue(): ElementValue = value
+    val name: Int = data.short
+    val value: ElementValue = new ElementValue(data)
 }
 
 class ElementValue(data: ClassfileStream) {
-    private val tag: Char = data.readByte().asInstanceOf[Char]
+    val tag: Char = data.byte.asInstanceOf[Char]
     private var constVal:  Int = -1
     private var classInfo: Int = -1
     private var annotation: Annotation = null
@@ -20,15 +17,14 @@ class ElementValue(data: ClassfileStream) {
     init()
 
     private def init(): Unit = tag match {
-        case 'B'|'C'|'D'|'F'|'I'|'J'|'S'|'Z'|'s' => this.constVal = data.readShort()
-        case 'c' => this.classInfo  = data.readShort()
-        case 'e' => this.enumConst  = new EnumConstValue(data.readShort(), data.readShort())
+        case 'B'|'C'|'D'|'F'|'I'|'J'|'S'|'Z'|'s' => this.constVal = data.short
+        case 'c' => this.classInfo  = data.short
+        case 'e' => this.enumConst  = new EnumConstValue(data.short, data.short)
         case '@' => this.annotation = new Annotation(data)
         case '[' => this.array      = new ArrayValue(data)
         case _   => throw new RuntimeException("unknown tag(" + tag + ").")
     }
 
-    def getTag(): Char = tag
     def getConstVal():   Int = constVal
     def getClassInfo():  Int = classInfo
     def getAnnotation(): Annotation     = annotation

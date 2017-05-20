@@ -12,5 +12,5 @@ class NewArray(_atype: Int, pc: Int) extends OpcodeInfo("newarray", pc) {
         case 11 => "long"
         case _  => throw new RuntimeException("unknown type.")
     }
-    override def toString(): String = super.toString() + ": " + atype
+    override def toString(): String = s"${super.toString()}: $atype"
 }

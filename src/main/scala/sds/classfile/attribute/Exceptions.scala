@@ -4,10 +4,8 @@ import sds.classfile.ClassfileStream
 import sds.classfile.constant_pool.ConstantInfo
 
 class Exceptions(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo {
-    private val ex: Array[String] = (0 until data.readShort()).map((_: Int) => {
-        extract(data.readShort(), pool).replace("/", ".")
+    val ex: Array[String] = (0 until data.short).map((_: Int) => {
+        extract(data.short, pool).replace("/", ".")
     }).toArray
-
-    def getEx(): Array[String] = ex
-    override def toString(): String = super.toString() + ": " + getEx().mkString("[", ",", "]")
+    override def toString(): String = super.toString() + ": " + ex.mkString("[", ",", "]")
 }

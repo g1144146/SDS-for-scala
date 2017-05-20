@@ -23,16 +23,12 @@ class HasReferenceOpcode(_index: Int, pool: Array[CInfo], _type: String, pc: Int
             case _       => ""
         }
     } else ""
-    def operand: String = if(ldcType.equals("String")) "\"" + extract(_index, pool) + "\""
+    def operand: String = if(ldcType == "String") "\"" + extract(_index, pool) + "\""
                           else                         extract(_index, pool)
 
     override def toString(): String = {
-        val b: Builder = new Builder(super.toString())
-        b.append(": #", _index, "(", operand)
-        if(ldcType.length > 0) {
-            b.append("(", ldcType, ")")
-        }
-        b.append(")")
-        b.toString()
+        val before: String = s"${super.toString()}: #${_index}($operand"
+        val after:  String = if(ldcType.length > 0) s"($ldcType))" else ")"
+        s"$before$after"
     }
 }

@@ -27,7 +27,6 @@ class SDS(args: Array[String]) {
     private def analyzeClassfile(): Unit = {
         classfiles.foreach((file: String) => {
             val reader: ClassfileReader = new ClassfileReader(file)
-            reader.read()
             val classfile: Classfile = reader.classfile
             val p: Printer = new Printer(classfile)
             p._print

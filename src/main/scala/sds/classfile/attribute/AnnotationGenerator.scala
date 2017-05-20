@@ -18,14 +18,14 @@ object AnnotationGenerator {
     }
 
     def generate(ann: Ann, pool: Array[CInfo]): String = {
-        val value: String = ann.getPairs().map((pair: Pair) => {
-            extract(pair.getName(), pool) + " = " + generateFromElementValue(pair.getValue(), pool, new Builder())
+        val value: String = ann.pairs.map((pair: Pair) => {
+            extract(pair.name, pool) + " = " + generateFromElementValue(pair.value, pool, new Builder())
         }).toArray.mkString("(", ",", ")")
-        "@" + parse(extract(ann.getType(), pool)) + value
+        "@" + parse(extract(ann._type, pool)) + value
     }
 
     def generateFromElementValue(element: Element, pool: Array[CInfo], builder: Builder): String = {
-        element.getTag() match {
+        element.tag match {
             case 'B'|'D'|'F'|'I'|'J'|'S'|'Z' => builder.append(extract(element.getConstVal(), pool))
             case 'C' => builder.append("'",  extract(element.getConstVal().asInstanceOf[Char], pool), "'")
             case 's' => builder.append("\"", extract(element.getConstVal(), pool), "\"")
@@ -35,11 +35,11 @@ object AnnotationGenerator {
                 builder.append(parse(extract(enum.typeName, pool)), ".", extract(enum.constName, pool))
             case '@' => builder.append(generate(element.getAnnotation, pool))
             case '[' =>
-                val arrayElement: String = element.getArray().getValues().map((ev: Element) => {
+                val arrayElement: String = element.getArray().values.map((ev: Element) => {
                     generateFromElementValue(ev, pool, new Builder())
                 }).toArray.mkString("{", ",", "}")
                 builder.append(arrayElement)
-            case _ => throw new RuntimeException("unknown tag(" + element.getTag() + ")")
+            case _ => throw new RuntimeException("unknown tag(" + element.tag + ")")
         }
         builder.toString()
     }

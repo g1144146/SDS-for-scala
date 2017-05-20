@@ -4,16 +4,15 @@ import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.attribute.annotation.Annotation
 
 class RuntimeTypeAnnotations(data: Stream, _name: String) extends AttributeInfo {
-    private val annotations: Array[TypeAnnotation] = (0 until data.readShort()).map((index: Int) => {
+    val annotations: Array[TypeAnnotation] = (0 until data.short).map((index: Int) => {
         val info: TargetInfo = TargetInfo(data)
-        val path: Array[(Int, Int)] = (0 until data.readUnsignedByte()).map((_: Int) => {
+        val path: Array[(Int, Int)] = (0 until data.unsignedByte).map((_: Int) => {
             // path_king, arg_index
-            (data.readByte(), data.readByte())
+            (data.byte, data.byte)
         }).toArray
         new TypeAnnotation(info, path, data)
     }).toArray
 
-    def getAnnotations(): Array[TypeAnnotation] = annotations
     def name: String = _name
 }
 
@@ -27,33 +26,33 @@ sealed abstract class TargetInfo {
 }
 
 object TargetInfo {
-    def apply(data: Stream): TargetInfo = data.readUnsignedByte() match {
+    def apply(data: Stream): TargetInfo = data.unsignedByte match {
         case 0x00
-          |  0x01 => new TypeParamTarget(data.readUnsignedByte())
-        case 0x10 => new SuperTypeTarget(data.readShort())
+          |  0x01 => new TypeParamTarget(data.unsignedByte)
+        case 0x10 => new SuperTypeTarget(data.short)
         case 0x11
-          |  0x12 => new TypeParamBoundTarget(data.readUnsignedByte(), data.readUnsignedByte())
+          |  0x12 => new TypeParamBoundTarget(data.unsignedByte, data.unsignedByte)
         case 0x13
           |  0x14
           |  0x15 => new EmptyTarget()
-        case 0x16 => new MethodFormalParamTarget(data.readUnsignedByte())
-        case 0x17 => new ThrowsTarget(data.readShort())
+        case 0x16 => new MethodFormalParamTarget(data.unsignedByte)
+        case 0x17 => new ThrowsTarget(data.short)
         case 0x40
           |  0x41 =>
-                     val table: Array[Array[Int]] = (0 until data.readShort()).map((_: Int) => {
-                         (0 until 3).map((x: Int) => data.readShort()).toArray
+                     val table: Array[Array[Int]] = (0 until data.short).map((_: Int) => {
+                         (0 until 3).map((x: Int) => data.short).toArray
                      }).toArray
                      new LocalVarTarget(table)
-        case 0x42 => new CatchTarget(data.readShort())
+        case 0x42 => new CatchTarget(data.short)
         case 0x43
           |  0x44
           |  0x45
-          |  0x46 => new OffsetTarget(data.readShort())
+          |  0x46 => new OffsetTarget(data.short)
         case 0x47
           |  0x48
           |  0x49
           |  0x4A
-          |  0x4B => new TypeArgTarget(data.readShort(), data.readUnsignedByte())
+          |  0x4B => new TypeArgTarget(data.short, data.unsignedByte)
         case _    => throw new RuntimeException("unknown target type.")
     }
 }

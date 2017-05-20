@@ -4,9 +4,9 @@ import sds.classfile.ClassfileStream
 import sds.classfile.constant_pool.ConstantInfo
 
 class LineNumberTable(data: ClassfileStream, pool: Array[ConstantInfo]) extends AttributeInfo {
-    private val table: Array[Array[Int]] = (0 until data.readShort()).map((index: Int) => {
-        val start: Int = data.readShort()
-        val line: Int = data.readShort()
+    val table: Array[Array[Int]] = (0 until data.short).map((index: Int) => {
+        val start: Int = data.short
+        val line: Int = data.short
         Array(start, -1, line)
     }).toArray
     init()
@@ -25,7 +25,6 @@ class LineNumberTable(data: ClassfileStream, pool: Array[ConstantInfo]) extends 
         })
     }
 
-    def getTable(): Array[Array[Int]] = table
     def getTableStr(): Array[String] = table.map((array: Array[Int]) => 
         "[range:" +  array(0) + "-" + array(1) + "|line:" + array(2) + "]").toArray
 }

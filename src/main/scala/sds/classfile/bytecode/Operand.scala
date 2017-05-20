@@ -6,21 +6,20 @@ import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 object Operand {
     def get(op: OpcodeInfo, pool: Array[ConstantInfo]): String = op match {
         case branch: BranchOpcode       => branch.branch.toString
-        case iinc:   Iinc               => iinc.index.toString +  "," + iinc.const.toString
+        case iinc:   Iinc               => s"${iinc.index.toString},${iinc.const.toString}"
         case index:  IndexOpcode        => index.index.toString
-        case inter:  InvokeInterface    => inter.getCount() + "," + extract(inter.index, pool)
-        case multi:  MultiANewArray     => multi.dimensions + "," + extract(multi.index, pool)
+        case inter:  InvokeInterface    => s"${inter.count},${extract(inter.index, pool)}"
+        case multi:  MultiANewArray     => s"${multi.dimensions},${extract(multi.index, pool)}"
         case array:  NewArray           => array.atype
         case push:   PushOpcode         => push.value.toString
-        case wide:   Wide               => wide.getConst() + ", " + extract(wide.index, pool)
+        case wide:   Wide               => s"${wide.const}, ${extract(wide.index, pool)}"
         case ref:    HasReferenceOpcode => extract(ref.index, pool)
         case table:  TableSwitch        =>
-            table.getOffset().mkString("[", ",", "]") + ", " + table.getDefault()
+            s"${table.getOffset().mkString("[", ",", "]")}, ${table.default}"
         case look:   LookupSwitch       => 
-            val _match: Array[Int] = look.getMatch()
-            val offset: Array[Int] = look.getOffset()
-            "[" + _match.indices.map((i: Int) => _match(i) + ":" + offset(i))
-                  .reduce((x, y) => x + "," + y) + "], " + look.getDefault
+            val _ma: Array[Int] = look.getMatch()
+            val off: Array[Int] = look.getOffset()
+            s"[${_ma.indices.map((i: Int) => s"${_ma(i)}:${off(i)}").mkString(",")}], ${look.default}"
         case _ => ""
     }
 }

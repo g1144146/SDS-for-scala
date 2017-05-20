@@ -5,8 +5,6 @@ import java.lang.{
   Double => Do,
   Float  => Fl,
   Long   => Lo,
-  Character,
-  Integer,
   Short
 }
 import java.io.{
@@ -16,41 +14,74 @@ import java.io.{
 }
 
 class ClassfileStream extends AutoCloseable {
-    var stream: DataInputStream = null;
-    var raf: RandomAccessFile = null;
-    var pointer: Long = 0;
+    def skip(n: Int):  Unit   = throw new UnsupportedOperationException("unimplemented method.")
+    def char:          Char   = throw new UnsupportedOperationException("unimplemented method.")
+    def byte:          Int    = throw new UnsupportedOperationException("unimplemented method.")
+    def double:        Double = throw new UnsupportedOperationException("unimplemented method.")
+    def float:         Float  = throw new UnsupportedOperationException("unimplemented method.")
+    def int:           Int    = throw new UnsupportedOperationException("unimplemented method.")
+    def long:          Long   = throw new UnsupportedOperationException("unimplemented method.")
+    def short:         Int    = throw new UnsupportedOperationException("unimplemented method.")
+    def unsignedByte:  Int    = throw new UnsupportedOperationException("unimplemented method.")
+    def unsignedShort: Int    = throw new UnsupportedOperationException("unimplemented method.")
+    def pointer:       Int    = throw new UnsupportedOperationException("unimplemented method.")
+    def readFully(b: Array[Byte]): Array[Byte] = throw new UnsupportedOperationException("unimplemented method.")
+    override def close(): Unit = throw new UnsupportedOperationException("unimplemented method.")
 
-    def this(raf: RandomAccessFile) {
-        this()
-        this.raf = raf;
+    private def create(file: String):        ClassfileStream = new ImplWithRandomAccessFile(file)
+    private def create(stream: InputStream): ClassfileStream = new ImplWithDataInputStream(stream)
+
+    class ImplWithRandomAccessFile(file: String) extends ClassfileStream {
+        private val raf: RandomAccessFile = new RandomAccessFile(file, "r")
+        override def skip(n: Int):  Unit   = raf.skipBytes(n)
+        override def byte:          Int    = raf.readByte
+        override def char:          Char   = raf.readChar
+        override def double:        Double = raf.readDouble
+        override def float:         Float  = raf.readFloat
+        override def int:           Int    = raf.readInt
+        override def long:          Long   = raf.readLong
+        override def short:         Int    = raf.readShort
+        override def unsignedByte:  Int    = raf.readUnsignedByte
+        override def unsignedShort: Int    = raf.readUnsignedShort
+        override def readFully(b: Array[Byte]): Array[Byte] = {
+            raf.readFully(b)
+            b
+        }
+        override def pointer: Int = raf.getFilePointer.toInt
+        override def close(): Unit = raf.close()
     }
 
-    def this(stream: InputStream) {
-        this()
-        this.stream = new DataInputStream(stream);
+    class ImplWithDataInputStream(_stream: InputStream) extends ClassfileStream {
+        private val stream: DataInputStream = new DataInputStream(_stream)
+        private var _pointer: Int = 0
+        override def byte:          Int    = read(By.BYTES,        stream.readByte)
+        override def char:          Char   = read(Character.BYTES, stream.readChar)
+        override def double:        Double = read(Do.BYTES,        stream.readDouble)
+        override def float:         Float  = read(Fl.BYTES,        stream.readFloat)
+        override def int:           Int    = read(Integer.BYTES,   stream.readInt)
+        override def long:          Long   = read(Lo.BYTES,        stream.readLong)
+        override def short:         Int    = read(Short.BYTES,     stream.readShort)
+        override def unsignedByte:  Int    = read(By.BYTES,        stream.readUnsignedByte)
+        override def unsignedShort: Int    = read(Short.BYTES,     stream.readUnsignedShort)
+        override def skip(n: Int): Unit = {
+            _pointer += n
+            stream.skipBytes(n)
+        }
+        override def readFully(b: Array[Byte]): Array[Byte] = {
+            _pointer += b.length
+            stream.readFully(b)
+            b
+        }
+        override def pointer: Int = _pointer
+        override def close(): Unit = stream.close()
+        def read[T](bytes: Int, readValue: T): T = {
+            _pointer += bytes
+            readValue
+        }
     }
+}
 
-    def skipBytes(n: Int):   Unit   = if(isRaf(n))               raf.skipBytes(n) else stream.skipBytes(n)
-    def readByte():          Int    = if(isRaf(By.BYTES))        raf.readByte()   else stream.readByte()
-    def readChar():          Char   = if(isRaf(Character.BYTES)) raf.readChar()   else stream.readChar()
-    def readDouble():        Double = if(isRaf(Do.BYTES))        raf.readDouble() else stream.readDouble()
-    def readFloat():         Float  = if(isRaf(Fl.BYTES))        raf.readFloat()  else stream.readFloat()
-    def readInt():           Int    = if(isRaf(Integer.BYTES))   raf.readInt()    else stream.readInt()
-    def readLong():          Long   = if(isRaf(Lo.BYTES))        raf.readLong()   else stream.readLong()
-    def readShort():         Int    = if(isRaf(Short.BYTES))     raf.readShort()  else stream.readShort()
-    def readUnsignedByte():  Int    = if(isRaf(By.BYTES))    raf.readUnsignedByte()  else stream.readUnsignedByte()
-    def readUnsignedShort(): Int    = if(isRaf(Short.BYTES)) raf.readUnsignedShort() else stream.readUnsignedShort()
-    
-    def readFully(b: Array[Byte]): Array[Byte] = {
-        if(isRaf(b.length)) raf.readFully(b) else stream.readFully(b)
-        b
-    }
-
-    def isRaf(bytes: Int): Boolean = {
-        pointer += bytes
-        raf != null
-    }
-
-    def getFilePointer(): Long = if(raf != null) raf.getFilePointer() else pointer
-    override def close(): Unit = if(raf != null) raf.close() else stream.close()
+object ClassfileStream {
+    def apply(file: String):        ClassfileStream = new ClassfileStream().create(file)
+    def apply(stream: InputStream): ClassfileStream = new ClassfileStream().create(stream)
 }

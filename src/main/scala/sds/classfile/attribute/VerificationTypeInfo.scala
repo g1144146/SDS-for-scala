@@ -9,7 +9,7 @@ sealed abstract class VerificationTypeInfo(_tag: Int) {
 
 object VerificationTypeInfo {
     def apply(data: Stream): VerificationTypeInfo = {
-        val tag: Int = data.readUnsignedByte()
+        val tag: Int = data.unsignedByte
         tag match {
             case 0 => new VerificationTypeInfoAdapter(tag, "top");
             case 1 => new VerificationTypeInfoAdapter(tag, "int");
@@ -18,8 +18,8 @@ object VerificationTypeInfo {
             case 4 => new VerificationTypeInfoAdapter(tag, "long");
             case 5 => new VerificationTypeInfoAdapter(tag, "null");
             case 6 => new VerificationTypeInfoAdapter(tag, "");
-            case 7 => new ObjectVar(tag, data.readShort());
-            case 8 => new UninitializedVar(tag, data.readShort());
+            case 7 => new ObjectVar(tag, data.short);
+            case 8 => new UninitializedVar(tag, data.short);
         }
     }
 }
