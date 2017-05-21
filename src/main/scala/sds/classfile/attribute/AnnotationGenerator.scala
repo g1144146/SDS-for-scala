@@ -20,7 +20,7 @@ object AnnotationGenerator {
     def generate(ann: Ann, pool: Array[CInfo]): String = {
         val value: String = ann.pairs.map((pair: Pair) => {
             extract(pair.name, pool) + " = " + generateFromElementValue(pair.value, pool, new Builder())
-        }).toArray.mkString("(", ",", ")")
+        }).mkString("(", ",", ")")
         "@" + parse(extract(ann._type, pool)) + value
     }
 
@@ -33,11 +33,11 @@ object AnnotationGenerator {
             case 'e' => 
                 val enum: Enum = element.getEnumConst()
                 builder.append(parse(extract(enum.typeName, pool)), ".", extract(enum.constName, pool))
-            case '@' => builder.append(generate(element.getAnnotation, pool))
+            case '@' => builder.append(generate(element.getAnnotation(), pool))
             case '[' =>
                 val arrayElement: String = element.getArray().values.map((ev: Element) => {
                     generateFromElementValue(ev, pool, new Builder())
-                }).toArray.mkString("{", ",", "}")
+                }).mkString("{", ",", "}")
                 builder.append(arrayElement)
             case _ => throw new RuntimeException("unknown tag(" + element.tag + ")")
         }

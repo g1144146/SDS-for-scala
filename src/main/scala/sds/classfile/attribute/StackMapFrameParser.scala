@@ -16,7 +16,7 @@ object StackMapFrameParser {
     private def getBefore(parsed: Link[(Int, Int), Map[String, Buffer[String]]], before: (Int, Int)): Buffer[String] = {
         if(parsed.contains(before) && (parsed(before) != null)) {
             if(parsed(before).contains("local") && parsed(before)("local") != null) {
-                return parsed(before)("local")
+                return parsed(before)("local").clone()
             }
         }
         Buffer()
@@ -27,7 +27,6 @@ object StackMapFrameParser {
         var before: Int = 0
         var beforeTag: Int = 0
         val parsed: Link[(Int, Int), Map[String, Buffer[String]]] = Link()
-        println("*** StackMapFrameParser.parse ***")
         frames.foreach((frame: Frame) => {
             val map: Map[String, Buffer[String]] = Map()
             val local: Buffer[String] = getBefore(parsed, (beforeTag, before))
@@ -71,12 +70,10 @@ object StackMapFrameParser {
                     s.tag
                 case _ => throw new RuntimeException("invalid StackMapFrame type.")
             }
-            println(frame.toString() + " - stack: [" + map("stack") + "], local: [" + map("local") + "]")
             parsed.put((frame.tag, key), map)
             before = key
             beforeTag = frame.tag
         })
-        println("")
         parsed
     }
 
