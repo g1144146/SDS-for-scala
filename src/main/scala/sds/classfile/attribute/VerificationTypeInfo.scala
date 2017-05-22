@@ -2,36 +2,30 @@ package sds.classfile.attribute
 
 import sds.classfile.{ClassfileStream => Stream}
 
-sealed abstract class VerificationTypeInfo(_tag: Int) {
-    def tag: Int = _tag
-    override def toString(): String = getClass().getSimpleName()
-}
+sealed abstract class VerificationTypeInfo
 
 object VerificationTypeInfo {
-    def apply(data: Stream): VerificationTypeInfo = {
-        val tag: Int = data.unsignedByte
-        tag match {
-            case 0 => new VerificationTypeInfoAdapter(tag, "top");
-            case 1 => new VerificationTypeInfoAdapter(tag, "int");
-            case 2 => new VerificationTypeInfoAdapter(tag, "float");
-            case 3 => new VerificationTypeInfoAdapter(tag, "double");
-            case 4 => new VerificationTypeInfoAdapter(tag, "long");
-            case 5 => new VerificationTypeInfoAdapter(tag, "null");
-            case 6 => new VerificationTypeInfoAdapter(tag, "");
-            case 7 => new ObjectVar(tag, data.short);
-            case 8 => new UninitializedVar(tag, data.short);
-        }
+    def apply(data: Stream): VerificationTypeInfo = data.unsignedByte match {
+        case 0 => new VerificationTypeInfoAdapter("top");
+        case 1 => new VerificationTypeInfoAdapter("int");
+        case 2 => new VerificationTypeInfoAdapter("float");
+        case 3 => new VerificationTypeInfoAdapter("double");
+        case 4 => new VerificationTypeInfoAdapter("long");
+        case 5 => new VerificationTypeInfoAdapter("null");
+        case 6 => new VerificationTypeInfoAdapter("");
+        case 7 => new ObjectVar(data.short);
+        case 8 => new UninitializedVar(data.short);
     }
 }
 
-class VerificationTypeInfoAdapter(tag: Int, _type: String) extends VerificationTypeInfo(tag) {
+class VerificationTypeInfoAdapter(_type: String) extends VerificationTypeInfo {
     override def toString(): String = _type
 }
 
-class ObjectVar(tag: Int, _cpool: Int) extends VerificationTypeInfo(tag) {
+class ObjectVar(_cpool: Int) extends VerificationTypeInfo {
     def cpool: Int = _cpool
 }
 
-class UninitializedVar(tag: Int, _offset: Int) extends VerificationTypeInfo(tag) {
+class UninitializedVar(_offset: Int) extends VerificationTypeInfo {
     def offset: Int = _offset
 }

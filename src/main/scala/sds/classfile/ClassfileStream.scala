@@ -15,7 +15,6 @@ import java.io.{
 
 class ClassfileStream extends AutoCloseable {
     def skip(n: Int):  Unit   = throw new UnsupportedOperationException("unimplemented method.")
-    def char:          Char   = throw new UnsupportedOperationException("unimplemented method.")
     def byte:          Int    = throw new UnsupportedOperationException("unimplemented method.")
     def double:        Double = throw new UnsupportedOperationException("unimplemented method.")
     def float:         Float  = throw new UnsupportedOperationException("unimplemented method.")
@@ -34,7 +33,6 @@ class ClassfileStream extends AutoCloseable {
         private val raf: RandomAccessFile = new RandomAccessFile(file, "r")
         override def skip(n: Int):  Unit   = raf.skipBytes(n)
         override def byte:          Int    = raf.readByte
-        override def char:          Char   = raf.readChar
         override def double:        Double = raf.readDouble
         override def float:         Float  = raf.readFloat
         override def int:           Int    = raf.readInt
@@ -53,7 +51,6 @@ class ClassfileStream extends AutoCloseable {
         private val stream: DataInputStream = new DataInputStream(_stream)
         private var _pointer: Int = 0
         override def byte:          Int    = read(By.BYTES,        stream.readByte)
-        override def char:          Char   = read(Character.BYTES, stream.readChar)
         override def double:        Double = read(Do.BYTES,        stream.readDouble)
         override def float:         Float  = read(Fl.BYTES,        stream.readFloat)
         override def int:           Int    = read(Integer.BYTES,   stream.readInt)
