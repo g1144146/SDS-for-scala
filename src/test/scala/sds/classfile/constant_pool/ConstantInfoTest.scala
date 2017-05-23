@@ -39,17 +39,17 @@ class ConstantInfoTest extends Assertions {
 
     @Test
     def fieldTest(): Unit = {
-        assert(new MemberInfo(ConstantType.FIELD, 0, 0).toString() === "Fieldref\t#0.#0")
+        assert(new MemberInfo(ConstantInfo.FIELD, 0, 0).toString() === "Fieldref\t#0.#0")
     }
 
     @Test
     def methodTest(): Unit = {
-        assert(new MemberInfo(ConstantType.METHOD, 0, 0).toString() === "Methodref\t#0.#0")
+        assert(new MemberInfo(ConstantInfo.METHOD, 0, 0).toString() === "Methodref\t#0.#0")
     }
 
     @Test
     def interfaceTest(): Unit = {
-        assert(new MemberInfo(ConstantType.INTERFACE, 0, 0).toString() === "InterfaceMethodref\t#0.#0")
+        assert(new MemberInfo(ConstantInfo.INTERFACE, 0, 0).toString() === "InterfaceMethodref\t#0.#0")
     }
 
     @Test
@@ -59,10 +59,10 @@ class ConstantInfoTest extends Assertions {
 
     @Test
     def numberTest(): Unit = {
-        val int: NumberInfo    = new NumberInfo(ConstantType.INTEGER, 0)
-        val float: NumberInfo  = new NumberInfo(ConstantType.FLOAT,0.0f)
-        val long: NumberInfo   = new NumberInfo(ConstantType.LONG, 0L)
-        val double: NumberInfo = new NumberInfo(ConstantType.DOUBLE, 0.0)
+        val int: NumberInfo    = new NumberInfo(ConstantInfo.INTEGER, 0)
+        val float: NumberInfo  = new NumberInfo(ConstantInfo.FLOAT,0.0f)
+        val long: NumberInfo   = new NumberInfo(ConstantInfo.LONG, 0L)
+        val double: NumberInfo = new NumberInfo(ConstantInfo.DOUBLE, 0.0)
         assert(int.toString() === "Int\t0")
         assert(float.toString() === "Float\t0.0")
         assert(long.toString() === "Long\t0")

@@ -1,12 +1,14 @@
 package sds
 
 import java.io.{IOException, InputStream}
-
+import scala.annotation.tailrec
 import sds.classfile.{MemberInfo, ClassfileStream => Stream}
 import sds.classfile.attribute.{AttributeInfo => Attribute}
-import sds.classfile.constant_pool.{ConstantType, NumberInfo, ConstantInfo => CInfo, ConstantInfoAdapter => Adapter, Utf8Info => Utf8}
-
-import scala.annotation.tailrec
+import sds.classfile.constant_pool.{
+  ConstantInfo => CInfo,
+  ConstantInfoAdapter => Adapter,
+  Utf8Info => Utf8
+}
 
 class ClassfileReader {
     val classfile: Classfile = new Classfile()
@@ -59,7 +61,7 @@ class ClassfileReader {
         val tag: Int = data.byte
         pool(i) = CInfo(tag, data)
         tag match {
-            case ConstantType.LONG|ConstantType.DOUBLE =>
+            case CInfo.LONG|CInfo.DOUBLE =>
                 pool(i + 1) = new Adapter()
                 readConstantPool(i + 2, pool, data)
             case _ => readConstantPool(i + 1, pool, data)

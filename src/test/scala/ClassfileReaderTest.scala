@@ -3,6 +3,7 @@ package sds
 import java.io.InputStream
 import java.net.URL
 import java.nio.file.Paths
+import collection.mutable.{ArrayBuffer => Buffer}
 import sds.classfile.MemberInfo
 import sds.classfile.attribute.{
   AnnotationDefault,
@@ -16,6 +17,7 @@ import sds.classfile.attribute.{
   RuntimeAnnotations     => RunAnn,
   RuntimeParameterAnnotations => RunParamAnn,
   RuntimeTypeAnnotations => RunTypeAnn,
+  StackMapTable => Stack,
   TypeAnnotation
 }
 import sds.classfile.attribute.AnnotationGenerator.generate
@@ -33,6 +35,8 @@ class ClassfileReaderTest extends Assertions {
     private val cf_1: Classfile = setUp("Hello.class")
     private val cf_2: Classfile = setUpStream("AnnotatedTest.class")
     private val cf_3: Classfile = setUp("RuntimeAnnotation.class")
+    private val cf_4: Classfile = setUpStream("Resize.class")
+    private val cf_5: Classfile = setUp("HogeMain.class")
 
     private def setUp(file: String): Classfile = {
         val url: URL = getLoader.getResource(file)
@@ -52,6 +56,7 @@ class ClassfileReaderTest extends Assertions {
 
     @Test
     def headerTest(): Unit = {
+//        sds.Main.main(Array("Hello.class"))
         // header
         assert(Integer.toHexString(cf_1.magic) === "cafebabe")
         assert(cf_1.major === 52)
@@ -167,6 +172,40 @@ class ClassfileReaderTest extends Assertions {
         assert(ad5.toString() === "AnnotationDefault: 100")
         assert(ad6.toString() === "AnnotationDefault: {1,2,3}")
         assert(ad7.toString() === "AnnotationDefault: int.class")
+    }
+
+    @Test
+    def stackMapFrameTest(): Unit = {
+        val code1: Code = cf_4.methods(0).attributes(0).asInstanceOf[Code]
+        val stack1: Stack = code1.attributes(1).asInstanceOf[Stack]
+        val entry_1 = stack1.entries.iterator
+        // FullFrame
+        val full = entry_1.next()
+        assert(full._1 === (255, 28))
+        assert(full._2("stack") === Buffer[String]())
+        assert(full._2("local") === Buffer("Resize", "String[]", "int"))
+        // ChopFrame
+        val chop = entry_1.next()
+        assert(chop._2("local") === Buffer("Resize", "String[]"))
+        // SameFrame
+        val same = entry_1.next()
+        assert(same._2("local") === Buffer("Resize", "String[]"))
+        // AppendFrame
+        val append = entry_1.next()
+        assert(append._2("local") === Buffer("Resize", "String[]", "int"))
+
+        val code4: Code = cf_4.methods(3).attributes(0).asInstanceOf[Code]
+        val stack4: Stack = code4.attributes(1).asInstanceOf[Stack]
+        val entry_4 = stack4.entries.iterator
+        entry_4.next()
+        val sameLocals = entry_4.next()
+        assert(sameLocals._2("stack") === Buffer("Runnable"))
+
+        val code5: Code = cf_4.methods(4).attributes(0).asInstanceOf[Code]
+        val stack5: Stack = code5.attributes(1).asInstanceOf[Stack]
+        val entry_5 = stack5.entries.iterator
+        val sameLocalsExtended = entry_5.next()
+        assert(sameLocalsExtended._2("stack") === Buffer("java.io.IOException"))
     }
 
     @Test
