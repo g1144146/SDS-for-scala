@@ -6,7 +6,7 @@ import sds.classfile.constant_pool.{ConstantInfo => Cons}
 import sds.util.AccessFlag.get
 import sds.util.DescriptorParser.parse
 
-class MemberInfo(data: Stream, pool: Array[Cons], f: (Stream, Array[Cons]) => Attribute) extends Information {
+class MemberInfo(data: Stream, pool: Array[Cons], f: (Stream, Array[Cons]) => Attribute) extends ClassfileInformation {
     private val declaration: Array[String] = (() => {
         val accIndex:  Int = data.short
         val nameIndex: Int = data.short
