@@ -41,7 +41,6 @@ class ClassfileReaderTest extends Assertions {
     private val cf_2: Classfile = setUpStream("AnnotatedTest.class")
     private val cf_3: Classfile = setUp("RuntimeAnnotation.class")
     private val cf_4: Classfile = setUpStream("Resize.class")
-    private val cf_5: Classfile = setUp("HogeMain.class")
 
     private def setUp(file: String): Classfile = {
         val url: URL = getLoader.getResource(file)
