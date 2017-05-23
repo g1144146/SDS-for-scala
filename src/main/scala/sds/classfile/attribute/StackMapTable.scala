@@ -18,7 +18,6 @@ class StackMapTable(data: Stream, pool: Array[CInfo], opcodes: Array[Opcode]) ex
 
 sealed abstract class StackMapFrame(_tag: Int) {
     def tag: Int = _tag
-    override def toString(): String = getClass().getSimpleName()
 }
 
 object StackMapFrame {

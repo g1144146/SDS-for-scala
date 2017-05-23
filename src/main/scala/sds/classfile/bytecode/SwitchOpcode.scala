@@ -1,29 +1,22 @@
 package sds.classfile.bytecode
 
+import scala.annotation.tailrec
 import sds.classfile.{ClassfileStream => Stream}
 
 sealed abstract class SwitchOpcode(data: Stream, _type: String, pc: Int) extends OpcodeInfo(_type, pc) {
     val default: Int = initDefault()
     protected var offset: Array[Int] = null
-    init()
 
     def getOffset(): Array[Int] = offset
 
     private def initDefault(): Int = {
-        skip(1, data)
+        skip(1 + pc, data)
         data.int + pc
     }
 
-    private def init(): Unit = {
-        if(_type.equals("tableswitch")) {
-            val low:  Int = data.int
-            val high: Int = data.int
-            this.offset = (0 until (high - low + 1)).map((_: Int) => data.int + pc).toArray
-        }
-    }
-
+    @tailrec
     private def skip(index: Int, data: Stream): Unit = {
-        if(((index + pc) % 4) == 0) {
+        if((index % 4) == 0) {
             return
         }
         data.byte
@@ -34,7 +27,10 @@ sealed abstract class SwitchOpcode(data: Stream, _type: String, pc: Int) extends
 }
 
 class TableSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "tableswitch", pc) {
-    override def toString(): String = super.toString() + getOffset().mkString("[", ",", "]")
+    this.offset = ((low: Int, high: Int) => {
+        (0 until (high - low + 1)).map((_: Int) => data.int + pc).toArray
+    })(data.int, data.int)
+    override def toString(): String = super.toString() + s"[${getOffset().mkString(", ")}, $default(default)]"
 }
 
 class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswitch", pc) {
@@ -53,6 +49,6 @@ class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswit
         })
     }
 
-    override def toString(): String = super.toString() +
-        getMatch().indices.map((_: Int) => (getMatch()(_), getOffset()(_))).mkString("[", "_", "]")
+    override def toString(): String = super.toString() + s"[${getMatch().indices.map((i: Int) => {
+        getMatch()(i) + ":" + getOffset()(i)}).mkString(", ")}, default:$default]"
 }

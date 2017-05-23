@@ -13,7 +13,11 @@ import sds.classfile.attribute.{
   TypeAnnotation, StackMapTable
 }
 import sds.classfile.attribute.AnnotationGenerator.generate
-import sds.classfile.bytecode.{OpcodeInfo => Opcode}
+import sds.classfile.bytecode.{
+  OpcodeInfo => Opcode,
+  SwitchOpcode,
+  Operand
+}
 import sds.classfile.constant_pool.ConstantInfo
 import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.AccessFlag.get

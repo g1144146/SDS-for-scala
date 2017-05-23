@@ -21,10 +21,15 @@ import sds.classfile.attribute.{
   TypeAnnotation
 }
 import sds.classfile.attribute.AnnotationGenerator.generate
-import sds.classfile.bytecode.{OpcodeInfo, InvokeDynamic}
-import sds.classfile.bytecode.{HasReferenceOpcode => Has}
-import sds.classfile.constant_pool.ConstantInfo
-import sds.classfile.constant_pool.{InvokeDynamicInfo => Invoke}
+import sds.classfile.bytecode.{
+  OpcodeInfo,
+  InvokeDynamic,
+  HasReferenceOpcode => Has,
+  LookupSwitch,
+  TableSwitch
+}
+import sds.classfile.bytecode.Operand
+import sds.classfile.constant_pool.{ConstantInfo, InvokeDynamicInfo => Invoke}
 import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.AccessFlag.get
 import sds.util.ClassfilePrinter
@@ -172,6 +177,16 @@ class ClassfileReaderTest extends Assertions {
         assert(ad5.toString() === "AnnotationDefault: 100")
         assert(ad6.toString() === "AnnotationDefault: {1,2,3}")
         assert(ad7.toString() === "AnnotationDefault: int.class")
+
+
+        val methods4: Array[MemberInfo] = cf_5.methods
+        val code5: Code = methods4(2).attributes(0).asInstanceOf[Code]
+        val switch: TableSwitch = code5.opcodes(4).asInstanceOf[TableSwitch]
+        assert(Operand.get(switch, cf_5.pool) === "[36, 41, 46, 52]")
+
+        val code6: Code = methods4(3).attributes(0).asInstanceOf[Code]
+        val look: LookupSwitch = code6.opcodes(6).asInstanceOf[LookupSwitch]
+        assert(Operand.get(look, cf_5.pool) === "[2223141:28, default:39]")
     }
 
     @Test

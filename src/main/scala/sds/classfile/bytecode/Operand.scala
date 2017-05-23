@@ -15,11 +15,11 @@ object Operand {
         case wide:   Wide               => s"${wide.const}, ${extract(wide.index, pool)}"
         case ref:    HasReferenceOpcode => extract(ref.index, pool)
         case table:  TableSwitch        =>
-            s"${table.getOffset().mkString("[", ",", "]")}, ${table.default}"
+            s"[${table.getOffset().mkString(", ")}, ${table.default}]"
         case look:   LookupSwitch       => 
             val _ma: Array[Int] = look.getMatch()
             val off: Array[Int] = look.getOffset()
-            s"[${_ma.indices.map((i: Int) => s"${_ma(i)}:${off(i)}").mkString(",")}], ${look.default}"
+            s"[${off.indices.map((i: Int) => s"${_ma(i)}:${off(i)}").mkString(", ")}, default:${look.default}]"
         case _ => ""
     }
 }

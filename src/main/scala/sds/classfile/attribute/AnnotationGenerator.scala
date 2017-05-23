@@ -39,7 +39,6 @@ object AnnotationGenerator {
                     generateFromElementValue(ev, pool, new Builder())
                 }).mkString("{", ",", "}")
                 builder.append(arrayElement)
-            case _ => throw new RuntimeException("unknown tag(" + element.tag + ")")
         }
         builder.toString()
     }
