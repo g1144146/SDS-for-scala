@@ -77,7 +77,7 @@ object OpcodeInfo {
             case 0xba => new InvokeDynamic(data, pool, pc)
             case 0xbc => new NewArray(data.unsignedByte, pc)
             case 0xc4 => new Wide(data, pool, pc)
-            case 0xc5 => new MultiANewArray(data.byte, data.short, pool, pc)
+            case 0xc5 => new MultiANewArray(data.short, data.byte, pool, pc)
             case 0xc8  /** goto_w **/
               |  0xc9  /** jsr_w **/
                       => new BranchOpcode(data.int, opType, pc)

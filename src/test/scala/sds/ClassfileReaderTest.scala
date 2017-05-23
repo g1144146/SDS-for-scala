@@ -1,46 +1,50 @@
 package sds
 
-import java.io.InputStream
+import java.io.{InputStream, ByteArrayInputStream}
 import java.net.URL
 import java.nio.file.Paths
-import collection.mutable.{ArrayBuffer => Buffer}
+
+import org.junit.Test
+import org.scalatest.Assertions
 import sds.classfile.MemberInfo
+import sds.classfile.attribute.AnnotationGenerator.generate
 import sds.classfile.attribute.{
   AnnotationDefault,
   BootstrapMethods,
-  Code,
-  Exceptions,
+  Code, Exceptions,
   InnerClasses,
   LineNumberTable,
   LocalVariable,
   SourceFile,
-  RuntimeAnnotations     => RunAnn,
+  TypeAnnotation,
+  RuntimeAnnotations => RunAnn,
   RuntimeParameterAnnotations => RunParamAnn,
   RuntimeTypeAnnotations => RunTypeAnn,
-  StackMapTable => Stack,
-  TypeAnnotation
+  StackMapTable => Stack
 }
-import sds.classfile.attribute.AnnotationGenerator.generate
 import sds.classfile.bytecode.{
-  OpcodeInfo,
   InvokeDynamic,
-  HasReferenceOpcode => Has,
   LookupSwitch,
-  TableSwitch
+  MultiANewArray => Multi,
+  OpcodeInfo,
+  Operand,
+  TableSwitch,
+  HasReferenceOpcode => Has
 }
-import sds.classfile.bytecode.Operand
-import sds.classfile.constant_pool.{ConstantInfo, InvokeDynamicInfo => Invoke}
 import sds.classfile.constant_pool.Utf8ValueExtractor.extract
+import sds.classfile.constant_pool.{ConstantInfo, InvokeDynamicInfo => Invoke}
 import sds.util.AccessFlag.get
 import sds.util.ClassfilePrinter
-import org.junit.Test
-import org.scalatest.Assertions
+
+import scala.collection.mutable.{ArrayBuffer => Buffer}
 
 class ClassfileReaderTest extends Assertions {
     private val cf_1: Classfile = setUp("Hello.class")
     private val cf_2: Classfile = setUpStream("AnnotatedTest.class")
     private val cf_3: Classfile = setUp("RuntimeAnnotation.class")
     private val cf_4: Classfile = setUpStream("Resize.class")
+    private val cf_5: Classfile = setUp("HogeMain.class")
+    private val cf_6: Classfile = setUpStream("HelloWorld.class")
 
     private def setUp(file: String): Classfile = {
         val url: URL = getLoader.getResource(file)
@@ -57,6 +61,12 @@ class ClassfileReaderTest extends Assertions {
     }
 
     private def getLoader: ClassLoader = getClass.getClassLoader
+
+    @Test
+    def classfileIOExceptionTest(): Unit = {
+        new ClassfileReader("xxx.class")
+        new ClassfileReader(new ByteArrayInputStream(Array[Byte]()))
+    }
 
     @Test
     def headerTest(): Unit = {
@@ -178,14 +188,20 @@ class ClassfileReaderTest extends Assertions {
         assert(ad7.toString() === "AnnotationDefault: int.class")
 
 
-        val methods4: Array[MemberInfo] = cf_5.methods
-        val code5: Code = methods4(2).attributes(0).asInstanceOf[Code]
+        val methods5: Array[MemberInfo] = cf_5.methods
+        val code5: Code = methods5(2).attributes(0).asInstanceOf[Code]
         val switch: TableSwitch = code5.opcodes(4).asInstanceOf[TableSwitch]
         assert(Operand.get(switch, cf_5.pool) === "[36, 41, 46, 52]")
 
-        val code6: Code = methods4(3).attributes(0).asInstanceOf[Code]
-        val look: LookupSwitch = code6.opcodes(6).asInstanceOf[LookupSwitch]
+        val code5_1: Code = methods5(3).attributes(0).asInstanceOf[Code]
+        val look: LookupSwitch = code5_1.opcodes(6).asInstanceOf[LookupSwitch]
         assert(Operand.get(look, cf_5.pool) === "[2223141:28, default:39]")
+
+
+        val methods6: Array[MemberInfo] = cf_6.methods
+        val code6: Code = methods6(8).attributes(0).asInstanceOf[Code]
+        val multi: Multi = code6.opcodes(22).asInstanceOf[Multi]
+        assert(Operand.get(multi, cf_6.pool) === "2,long[][]")
     }
 
     @Test

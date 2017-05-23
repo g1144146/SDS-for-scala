@@ -2,6 +2,7 @@ package sds.classfile.bytecode
 
 import sds.classfile.constant_pool.ConstantInfo
 import sds.classfile.constant_pool.Utf8ValueExtractor.extract
+import sds.util.DescriptorParser.parse
 
 object Operand {
     def get(op: OpcodeInfo, pool: Array[ConstantInfo]): String = op match {
@@ -9,7 +10,7 @@ object Operand {
         case iinc:   Iinc               => s"${iinc.index.toString},${iinc.const.toString}"
         case index:  IndexOpcode        => index.index.toString
         case inter:  InvokeInterface    => s"${inter.count},${extract(inter.index, pool)}"
-        case multi:  MultiANewArray     => s"${multi.dimensions},${extract(multi.index, pool)}"
+        case multi:  MultiANewArray     => s"${multi.dimensions},${parse(extract(multi.index, pool), false)}"
         case array:  NewArray           => array.atype
         case push:   PushOpcode         => push.value.toString
         case wide:   Wide               => s"${wide.const}, ${extract(wide.index, pool)}"
