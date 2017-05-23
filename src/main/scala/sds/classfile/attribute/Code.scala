@@ -1,5 +1,6 @@
 package sds.classfile.attribute
 
+import scala.annotation.tailrec
 import collection.mutable.{ArrayBuffer => Buffer}
 import sds.classfile.{ClassfileStream => Stream}
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
@@ -9,7 +10,7 @@ class Code(data: Stream, pool: Array[CInfo]) extends AttributeInfo {
     val maxStack:  Int = data.short
     val maxLocals: Int = data.short
     val opcodes: Array[Opcode] = initOpcodes()
-    val exTable: Array[(Array[Int], String)] = (0 until data.short).map((index: Int) => {
+    val exTable: Array[(Array[Int], String)] = (0 until data.short).map((_: Int) => {
         // 0: start, 1: end, 2: handle
         val indexes: Array[Int] = (0 until 3).map((_: Int) => data.short).toArray
         val catchType: Int = data.short
@@ -28,6 +29,7 @@ class Code(data: Stream, pool: Array[CInfo]) extends AttributeInfo {
         readOpcode(len, pointer, data, pool, Buffer[Opcode]())
     }
 
+    @tailrec
     private def readOpcode(len: Int, pointer: Int, data: Stream, pool: Array[CInfo], buffer: Buffer[Opcode]):
     Array[Opcode] = {
         val index: Int = data.pointer
