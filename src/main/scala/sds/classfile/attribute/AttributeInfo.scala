@@ -1,14 +1,12 @@
 package sds.classfile.attribute
 
-import sds.classfile.{Information, ClassfileStream => Stream}
+import sds.classfile.{ClassfileInformation, ClassfileStream => Stream}
 import sds.classfile.bytecode.{OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
 import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.DescriptorParser.parse
 
-abstract class AttributeInfo extends Information {
-    override def toString(): String = getClass().getSimpleName()
-}
+abstract class AttributeInfo extends ClassfileInformation
 
 object AttributeInfo {
     def apply(name: String, data: Stream, pool: Array[CInfo]): AttributeInfo = {
@@ -41,7 +39,7 @@ object AttributeInfo {
     }
 
     def apply(name: String, data: Stream, pool: Array[CInfo], opcodes: Array[Opcode]): AttributeInfo = {
-        if(name.equals("StackMapTable")) {
+        if(name == "StackMapTable") {
             val len: Int = data.int
             new StackMapTable(data, pool, opcodes)
         } else {

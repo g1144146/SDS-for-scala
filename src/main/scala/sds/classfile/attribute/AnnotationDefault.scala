@@ -8,5 +8,5 @@ import sds.classfile.attribute.AnnotationGenerator.generateFromElementValue
 
 class AnnotationDefault(data: Stream, pool: Array[CInfo]) extends AttributeInfo {
     val default: String = generateFromElementValue(new ElementValue(data), pool, new Builder())
-    override def toString(): String = super.toString() + ": " + default
+    override def toString(): String = "AnnotationDefault: " + default
 }

@@ -7,5 +7,5 @@ class Exceptions(data: ClassfileStream, pool: Array[ConstantInfo]) extends Attri
     val ex: Array[String] = (0 until data.short).map((_: Int) => {
         extract(data.short, pool).replace("/", ".")
     }).toArray
-    override def toString(): String = super.toString() + ": " + ex.mkString("[", ",", "]")
+    override def toString(): String = "Exceptions: " + ex.mkString("[", ",", "]")
 }
