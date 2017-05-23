@@ -1,11 +1,11 @@
 package sds.classfile.bytecode
 
 import sds.classfile.ClassfileStream
-import sds.classfile.Information
+import sds.classfile.ClassfileInformation
 import sds.classfile.bytecode.{MnemonicTable => Table}
 import sds.classfile.constant_pool.ConstantInfo
 
-class OpcodeInfo(__type: String, _pc: Int) extends Information {
+class OpcodeInfo(__type: String, _pc: Int) extends ClassfileInformation {
     def _type: String = __type
     def pc: Int = _pc
     override def toString(): String = s"$pc - ${_type}"
