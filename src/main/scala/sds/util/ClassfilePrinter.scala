@@ -122,7 +122,7 @@ class ClassfilePrinter(cf: Classfile) {
                     name.indices.foreach((i: Int) => {
                         val first: String  = s"$indent    [$i]: "
                         val second: String = s"${name(i)(1)} ${name(i)(0)}"
-                        val third: String  = s" {${table(i)(0)}-${table(i)(1)}"
+                        val third: String  = s" {${table(i)(0)}-${table(i)(1)}}"
                         println(s"$first$second$third")
                     })
                 case ra: RuntimeAnnotations =>

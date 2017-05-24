@@ -15,6 +15,7 @@ import sds.classfile.attribute.{
   InnerClasses,
   LineNumberTable,
   LocalVariable,
+  MethodParameters,
   SourceFile,
   TypeAnnotation,
   RuntimeAnnotations => RunAnn,
@@ -45,6 +46,7 @@ class ClassfileReaderTest extends Assertions {
     private val cf_4: Classfile = setUpStream("Resize.class")
     private val cf_5: Classfile = setUp("HogeMain.class")
     private val cf_6: Classfile = setUpStream("HelloWorld.class")
+    private val cf_7: Classfile = setUp("Test.class")
 
     private def setUp(file: String): Classfile = {
         val url: URL = getLoader.getResource(file)
@@ -202,6 +204,11 @@ class ClassfileReaderTest extends Assertions {
         val code6: Code = methods6(8).attributes(0).asInstanceOf[Code]
         val multi: Multi = code6.opcodes(22).asInstanceOf[Multi]
         assert(Operand.get(multi, cf_6.pool) === "2,long[][]")
+
+
+        val methods7: Array[MemberInfo] = cf_7.methods
+        val param: MethodParameters = methods7(6).attributes(1).asInstanceOf[MethodParameters]
+        assert(param.toString() === "MethodParameters: [final f, i]")
     }
 
     @Test
