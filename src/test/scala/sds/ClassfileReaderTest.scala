@@ -28,7 +28,6 @@ import sds.classfile.bytecode.{
   LookupSwitch,
   MultiANewArray => Multi,
   OpcodeInfo,
-  Operand,
   TableSwitch,
   HasReferenceOpcode => Has
 }
@@ -193,17 +192,17 @@ class ClassfileReaderTest extends Assertions {
         val methods5: Array[MemberInfo] = cf_5.methods
         val code5: Code = methods5(2).attributes(0).asInstanceOf[Code]
         val switch: TableSwitch = code5.opcodes(4).asInstanceOf[TableSwitch]
-        assert(Operand.get(switch, cf_5.pool) === "[36, 41, 46, 52]")
+        assert(switch.toString() === "8 - tableswitch: [36, 41, 46, 52(default)]")
 
         val code5_1: Code = methods5(3).attributes(0).asInstanceOf[Code]
         val look: LookupSwitch = code5_1.opcodes(6).asInstanceOf[LookupSwitch]
-        assert(Operand.get(look, cf_5.pool) === "[2223141:28, default:39]")
+        assert(look.toString() === "8 - lookupswitch: [2223141:28, default:39]")
 
 
         val methods6: Array[MemberInfo] = cf_6.methods
         val code6: Code = methods6(8).attributes(0).asInstanceOf[Code]
         val multi: Multi = code6.opcodes(22).asInstanceOf[Multi]
-        assert(Operand.get(multi, cf_6.pool) === "2,long[][]")
+        assert(multi.toString() === "26 - multianewarray: #35(long[][]), dimensions:2")
 
 
         val methods7: Array[MemberInfo] = cf_7.methods

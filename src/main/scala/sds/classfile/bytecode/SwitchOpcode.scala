@@ -22,15 +22,13 @@ sealed abstract class SwitchOpcode(data: Stream, _type: String, pc: Int) extends
         data.byte
         skip(index + 1, data)
     }
-
-    override def toString(): String = super.toString() + ": "
 }
 
 class TableSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "tableswitch", pc) {
     this.offset = ((low: Int, high: Int) => {
         (0 until (high - low + 1)).map((_: Int) => data.int + pc).toArray
     })(data.int, data.int)
-    override def toString(): String = super.toString() + s"[${getOffset().mkString(", ")}, $default(default)]"
+    override def toString(): String = super.toString() + s": [${getOffset().mkString(", ")}, $default(default)]"
 }
 
 class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswitch", pc) {
@@ -49,6 +47,6 @@ class LookupSwitch(data: Stream, pc: Int) extends SwitchOpcode(data, "lookupswit
         })
     }
 
-    override def toString(): String = super.toString() + s"[${getMatch().indices.map((i: Int) => {
+    override def toString(): String = super.toString() + s": [${getMatch().indices.map((i: Int) => {
         getMatch()(i) + ":" + getOffset()(i)}).mkString(", ")}, default:$default]"
 }

@@ -1,14 +1,9 @@
 package sds.classfile.attribute
 
-import collection.mutable.{
-  ArrayBuffer   => Buffer,
-  HashMap       => Map,
-  LinkedHashMap => Link
-}
+import collection.mutable.{ArrayBuffer => Buffer, HashMap => Map, LinkedHashMap => Link}
 import sds.classfile.attribute.{StackMapFrame => Frame, VerificationTypeInfo => Verify}
-import sds.classfile.bytecode.{OpcodeInfo => Opcode}
+import sds.classfile.bytecode.{HasReferenceOpcode, OpcodeInfo => Opcode}
 import sds.classfile.constant_pool.{ConstantInfo => CInfo}
-import sds.classfile.bytecode.Operand.get
 import sds.classfile.constant_pool.Utf8ValueExtractor.extract
 import sds.util.DescriptorParser.parse
 
@@ -73,7 +68,7 @@ object StackMapFrameParser {
         case ov: ObjectVar        =>
             val value: String = extract(ov.cpool, pool)
             if(value.startsWith("[")) parse(value) else value
-        case uv: UninitializedVar => get(opcodes(uv.offset), pool)
+        case uv: UninitializedVar => opcodes(uv.offset).asInstanceOf[HasReferenceOpcode].operand
         case _                    => info.toString()
     }
 }

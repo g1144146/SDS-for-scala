@@ -3,7 +3,6 @@ package sds.classfile.bytecode
 import org.junit.Test
 import org.scalatest.Assertions
 import sds.classfile.constant_pool._
-import sds.classfile.bytecode.Operand.get
 
 class OpcodeInfoTest extends Assertions {
     val info: Array[ConstantInfo] = Array(
@@ -18,21 +17,18 @@ class OpcodeInfoTest extends Assertions {
     def branchTest(): Unit = {
         val branch: BranchOpcode = new BranchOpcode(10, "_goto", 0)
         assert(branch.toString() === "0 - _goto: 10")
-        assert(get(branch, info) === "10")
     }
 
     @Test
     def iincTest(): Unit = {
         val iinc: Iinc = new Iinc(0, 0, 0)
         assert(iinc.toString() === "0 - iinc: 0, 0")
-        assert(get(iinc, info) === "0,0")
     }
 
     @Test
     def indexTest(): Unit = {
         val index: IndexOpcode = new IndexOpcode(1, "iload", 0)
         assert(index.toString() === "0 - iload: 1")
-        assert(get(index, info) === "1")
     }
 
     @Test
@@ -46,7 +42,6 @@ class OpcodeInfoTest extends Assertions {
         assert(array(5).toString() === "0 - newarray: short")
         assert(array(6).toString() === "0 - newarray: int")
         assert(array(7).toString() === "0 - newarray: long")
-        assert(get(array(6), info) === "int")
         intercept[RuntimeException] {
             new NewArray(12, 0).toString === ""
         }
@@ -56,7 +51,6 @@ class OpcodeInfoTest extends Assertions {
     def pushTest(): Unit = {
         val push: PushOpcode = new PushOpcode(0, "bipush", 0)
         assert(push.toString() === "0 - bipush: 0")
-        assert(get(push, info) === "0")
     }
 
     @Test
@@ -78,6 +72,5 @@ class OpcodeInfoTest extends Assertions {
         assert(string.toString() === "0 - ldc: #6(\"utf8\"(String))")
         assert(_class.toString() === "0 - ldc: #11(Object(Object))")
         assert(utf8.toString()   === "0 - ldc: #1(utf8)")
-        assert(get(utf8, info)   === "utf8")
     }
 }

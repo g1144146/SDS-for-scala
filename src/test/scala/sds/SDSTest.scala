@@ -9,8 +9,8 @@ class SDSTest extends Assertions {
         new SDS(Array("xxx.jar"))
     }
 
-    @Test
-    def classfileRunTest(): Unit = {
-        new SDS(Array("Hello.class"))
-    }
+//    @Test
+//    def classfileRunTest(): Unit = {
+//        new SDS(Array("Hello.class")).run()
+//    }
 }
